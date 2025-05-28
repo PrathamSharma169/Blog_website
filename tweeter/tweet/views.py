@@ -52,7 +52,7 @@ def delete_tweet(request,tweet_id):
 
 def login(request):
     if request.method=='POST':
-        form=UserRegistrationForm()
+        form=UserRegistrationForm(request.POST)
         if form.is_valid():
             user=form.save(commit=False)
             user.set_password(form.cleaned_data['password1'])
@@ -61,4 +61,4 @@ def login(request):
             return redirect('tweet_list')
     else:
         form=UserRegistrationForm()
-    return render(request,'registeration/register.html',{'form':form})
+    return render(request,'registration/register.html',{'form':form})
