@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path,include
 from . import views
 from django.conf import settings
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     # path('tweet/',include('tweet.urls'))
@@ -10,6 +11,8 @@ urlpatterns = [
     path('<int:tweet_id>/edit/',views.edit_tweet,name='tweet_edit'),
     path('<int:tweet_id>/delete/',views.delete_tweet,name='tweet_delete'),
     path('<int:tweet_id>/user_tweet/',views.tweet,name='tweet'),
-    path('register/',views.login,name='register'),
+    path('register/',views.register,name='register'),
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('mytweet/',views.my_tweets,name='my_tweets')
     # path("__reload__/", include("django_browser_reload.urls"))
 ]

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+new page
+{% endblock %}
+
+{% block content %}
+{% comment %} <a class= "btn btn-primary mb-4" href="{% url 'tweet_create' %}" >Create a Tweet </a> {% endcomment %}
+<h2 class="text-center mt-4">My Tweets</h2>
+
+<div class="container mt-3">
+  {% if tweets %}
+  <div class= "container row gap-3">
+    {% for tweet in tweets  %}
+    <div class="card" style="width: 18rem;">
+  <a href="{%url 'tweet' tweet.user.id%}">
+  <img src="{{tweet.photo.url}}" class="card-img-top" alt="...">
+  </a>
+  <div class="card-body">
+    <h3 class="card-title">{{tweet.title}}</h5>
+    <h5 class="card-title">{{tweet.user.username}}</h5>
+    <p class="card-text">{{tweet.text|slice:":10"}}</p>
+    {% if tweet.user.id == user.id %}
+    <a href="{% url 'tweet_edit' tweet.id%}" class="btn btn-primary">Edit</a>
+    <a href="{% url 'tweet_delete' tweet.id%}" class="btn btn-primary">Delete</a>
+    {% endif %}
+  </div>
+</div>
+    {% endfor %}
+</div>
+  {% else %}
+    <p class="text-center">You haven't posted any tweets yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

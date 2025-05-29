@@ -1,11 +1,38 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<form method="post" class="d-flex">
-    {% csrf_token %}
-    {{form}}
-    <button class="btn btn-primary">Login</button>
-</form>
+<!-- Centered Login Form -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="mt-5 p-4 bg-dark rounded shadow-sm">
+        <h3 class="mb-4 text-center">Login</h3>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}
+              <div class="text-danger">{{ form.username.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+              <div class="text-danger">{{ form.password.errors }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <p>Don't have an account?</p>
 <a href="{%url 'register'%}">Register Here </a>

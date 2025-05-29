@@ -54,7 +54,7 @@ def delete_tweet(request,tweet_id):
         return redirect('tweet_list')
     return render(request,'tweet_confirm_delete.html',{'tweet':tweet})
 
-def login(request):
+def register(request):
     if request.method=='POST':
         form=UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -66,3 +66,8 @@ def login(request):
     else:
         form=UserRegistrationForm()
     return render(request,'registration/register.html',{'form':form})
+
+@login_required
+def my_tweets(request):
+    tweets = Tweet.objects.filter(user=request.user).order_by('-created_at')  # optional sorting
+    return render(request, 'mytweet.html', {'tweets': tweets})
