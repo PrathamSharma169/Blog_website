@@ -10,6 +10,10 @@ from django.contrib.auth import login
 def nav(request):
     return render(request,"index.html")
 
+def tweet(request,tweet_id):
+    tweet=get_object_or_404(Tweet,pk=tweet_id)
+    return render(request,'tweet_page.html',{'tweet':tweet})
+
 def tweet_list(request):
     tweets=Tweet.objects.all().order_by('created_at')
     return render(request,'tweet_list.html',{'tweets':tweets}) # is html page pr tweets object bhi jayga

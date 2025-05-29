@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Tweet
+{% endblock %}
+
+{% block content %}
+<h1>{{tweet.title}}</h1>
+<h5>{{tweet.user.username}}</h1>
+<img src="{{tweet.photo.url}}">
+<p>{{tweet.text}}</p>
+{% endblock %}
