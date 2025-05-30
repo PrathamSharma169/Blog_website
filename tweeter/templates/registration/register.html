@@ -5,7 +5,7 @@
     <div class="col-md-6">
 
       <!-- Add spacing below the navbar -->
-      <div class="mt-5 p-4 bg-dark rounded shadow-sm">
+      <div class="mt-5 p-4 bg-dark rounded bg-opacity-50 shadow-sm">
 
         <h3 class="mb-4 text-center">Register</h3>
 
@@ -46,11 +46,11 @@
 
           <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
+        <p>Already have an account?</p>
+        <a href="{%url 'register'%}">Login Here </a>
       </div>
     </div>
   </div>
 </div>
 
-<p>Already have an account?</p>
-<a href="{%url 'register'%}">Login Here </a>
 {% endblock  %}
