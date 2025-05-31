@@ -13,6 +13,7 @@ urlpatterns = [
     path('<int:tweet_id>/user_tweet/',views.tweet,name='tweet'),
     path('register/',views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('mytweet/',views.my_tweets,name='my_tweets')
+    path('mytweet/',views.my_tweets,name='my_tweets'),
+    path('search/', views.search_tweets, name='tweet_search'),
     # path("__reload__/", include("django_browser_reload.urls"))
 ]

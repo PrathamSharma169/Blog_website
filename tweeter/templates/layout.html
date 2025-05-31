@@ -13,64 +13,53 @@
     </title>
 </head>
 <body class='bg-secondary text-white'>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg shadow-sm sticky-top" style="background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Tweetster</a>   
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand fw-bold text-light" href="{% url 'tweet_list' %}">Tweetster</a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{%url 'tweet_list'%}">Home</a>
+          <a class="nav-link active fw-semibold text-light" href="{% url 'tweet_list' %}">Home</a>
         </li>
-        {% comment %} <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li> {% endcomment %}
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{%url 'my_tweets'%}">My Tweets</a>
+          <a class="nav-link fw-semibold text-light" href="{% url 'my_tweets' %}">My Tweets</a>
         </li>
-        {% comment %} <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li> {% endcomment %}
-        {% comment %} <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li> {% endcomment %}
       </ul>
-      <form class="d-flex" role="search">
-      </form>
-      {% if user.is_authenticated %}
-      <li class="nav-item">
-      <form method="post" action="{%url 'logout'%}">
-        {% csrf_token %}
-        <button class="btn btn-danger" type='submit'>Logout</button>
-      </form>
-    </li>
-      {% else %}
-      <li class="nav-item">
-      <a href="{%url 'login'%}">
-        <button class="btn btn-success" type='submit'>Login</button>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="{%url 'register'%}">
-        <button class="btn btn-success" type='submit'>Register</button>
-      </a>
-    </li>
-      {% endif %}
+      <form class="d-flex align-items-center me-3" method="get" action="{% url 'tweet_search' %}">
+  <input class="form-control form-control-sm bg-light text-dark border-0 rounded-start me-3" 
+         style="width: 180px;" 
+         type="search" name="q" placeholder="Search tweets" aria-label="Search">
+  <button class="btn btn-outline-light btn-sm rounded-end" type="submit">Search</button>
+</form>
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <form method="post" action="{% url 'logout' %}" class="d-flex align-items-center">
+            {% csrf_token %}
+            <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+          </form>
+        </li>
+        {% else %}
+        <li class="nav-item me-2">
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'register' %}" class="btn btn-light btn-sm">Register</a>
+        </li>
+        {% endif %}
+      </ul>
     </div>
   </div>
 </nav>
+
     {% block content %}
-    <h1 class=" text-light text-center"> Hii i am pratham </h1>
+    <h1 class=" text-light text-center"> Hii I am Pratham Sharma, Welcome to my project to go to main website click on Home button</h1>
     {% endblock %}
 </body>
 </html>

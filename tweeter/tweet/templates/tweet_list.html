@@ -1,27 +1,61 @@
 {% extends "layout.html" %}
+{% block head %}
+<style>
+  .glass-card {
+    background-color: rgba(33, 37, 41, 0.75); /* Dark translucent */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: white;
+    transition: transform 0.2s ease;
+  }
 
-{% block title %}
-new page
+  .glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<a class= "btn btn-primary mb-4" href="{% url 'tweet_create' %}" >Create a Tweet </a>
-<div class= "container row gap-3">
-    {% for tweet in tweets  %}
-    <div class="card" style="width: 18rem;">
-  <a href="{%url 'tweet' tweet.user.id%}">
-  <img src="{{tweet.photo.url}}" class="card-img-top" alt="...">
-  </a>
-  <div class="card-body">
-    <h3 class="card-title">{{tweet.title}}</h5>
-    <h5 class="card-title">{{tweet.user.username}}</h5>
-    <p class="card-text">{{tweet.text|slice:":10"}}</p>
-    {% if tweet.user.id == user.id %}
-    <a href="{% url 'tweet_edit' tweet.id%}" class="btn btn-primary">Edit</a>
-    <a href="{% url 'tweet_delete' tweet.id%}" class="btn btn-primary">Delete</a>
-    {% endif %}
+<div class="text-center my-4">
+  <a class="btn btn-success btn-lg shadow" href="{% url 'tweet_create' %}">+ Create a Tweet</a>
+</div>
+
+<div class="container">
+  <div class="row g-4 justify-content-center">
+    {% for tweet in tweets %}
+    <div class="col-md-4 col-sm-6">
+      <div class="card glass-card border-0 shadow-lg rounded-4 h-100 overflow-hidden">
+
+        <!-- Tweet Image -->
+        <img src="{{ tweet.photo.url }}" class="card-img-top rounded-top" alt="{{ tweet.title }}" style="height: 200px; object-fit: cover;">
+
+        <!-- Card Content -->
+        <div class="card-body text-light p-0 d-flex flex-column justify-content-between h-100">
+
+          <!-- Title & Username Layer -->
+          <div class="p-3 bg-dark bg-opacity-50 border-bottom border-secondary">
+            <h4 class="card-title fw-bold mb-1">{{ tweet.title }}</h4>
+            <h6 class="text-warning mb-0">@{{ tweet.user.username }}</h6>
+          </div>
+
+          <!-- Tweet Text Layer -->
+          <div class="p-3 bg-white text-dark flex-grow-1 d-flex flex-column justify-content-between">
+            <p class="card-text mb-2">{{ tweet.text|slice:":50" }}... <a href="{% url 'tweet' tweet.id %}">Read more</a></p>
+
+            {% if tweet.user.id == user.id %}
+            <div class="d-flex justify-content-between mt-2">
+              <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-dark btn-sm">Edit</a>
+              <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+            </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </div>
-    {% endfor %}
-</div>
 {% endblock %}
+

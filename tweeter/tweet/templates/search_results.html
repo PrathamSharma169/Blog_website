@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block head %}
+<style>
+.glass-card {
+  background-color: rgba(33, 37, 41, 0.75); /* dark glassy */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  transition: transform 0.2s ease;
+}
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-light mb-4">Search Results for "{{ query }}"</h2>
+  
+  {% if tweets %}
+    <div class="row g-4 justify-content-center">
+      {% for tweet in tweets %}
+      <div class="col-md-4">
+        <div class="card glass-card border-0 shadow-lg rounded-4 h-100">
+          <a href="{% url 'tweet' tweet.user.id %}">
+            <img src="{{ tweet.photo.url }}" class="card-img-top" alt="{{ tweet.title }}">
+          </a>
+          <div class="card-body text-light">
+            <h4 class="card-title fw-bold">{{ tweet.title }}</h4>
+            <h6 class="text-warning">@{{ tweet.user.username }}</h6>
+            <p class="card-text">{{ tweet.text|truncatechars:50 }}</p>
+            {% if tweet.user.id == user.id %}
+            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-light btn-sm">Edit</a>
+            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-light">No tweets found.</p>
+  {% endif %}
+</div>
+{% endblock %}

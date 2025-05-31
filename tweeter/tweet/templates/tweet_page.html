@@ -7,25 +7,51 @@
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+.fixed-img-container {
+  width: 100%;
+  max-width: 350px;  /* increased width */
+  min-width: 300px;  /* increased min width */
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.fixed-img {
+  max-height: 400px;  /* increased height */
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
 </style>
 {% endblock %}
+
+
+
 {% block title %}
 Tweet
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
-  <div class="p-4 rounded-4 shadow-lg glassy-bg text-light">
-    <h1 class="fw-bold">{{ tweet.title }}</h1>
-    <h5 class="mb-3 text-warning">by {{ tweet.user.username }}</h5>
+  <div class="d-flex flex-md-row flex-column glassy-bg rounded-4 shadow-lg text-light overflow-hidden">
 
+    <!-- Fixed Image on Left -->
     {% if tweet.photo %}
-      <img src="{{ tweet.photo.url }}" class="img-fluid rounded mb-4 w-50 d-block mx-auto" alt="Tweet image">
+    <div class="fixed-img-container">
+      <img src="{{ tweet.photo.url }}" class="fixed-img" alt="Tweet image">
+    </div>
     {% endif %}
 
-    <p class="fs-5">{{ tweet.text }}</p>
+    <!-- Text Content on Right -->
+    <div class="flex-grow-1 p-4">
+      <h1 class="fw-bold mb-2">{{ tweet.title }}</h1>
+      <h5 class="text-warning mb-3">by @{{ tweet.user.username }}</h5>
+      <p class="fs-5">{{ tweet.text }}</p>
+    </div>
+
   </div>
 </div>
-
-
 {% endblock %}

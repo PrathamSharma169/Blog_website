@@ -1,4 +1,20 @@
 {% extends "layout.html" %}
+{% block head %}
+<style>
+.glass-card {
+  background-color: rgba(33, 37, 41, 0.75); /* dark glassy */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  transition: transform 0.2s ease;
+}
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+</style>
+
+{% endblock %}
 
 {% block title %}
 new page
@@ -10,24 +26,28 @@ new page
 
 <div class="container mt-3">
   {% if tweets %}
-  <div class= "container row gap-3">
-    {% for tweet in tweets  %}
-    <div class="card" style="width: 18rem;">
-  <a href="{%url 'tweet' tweet.user.id%}">
-  <img src="{{tweet.photo.url}}" class="card-img-top" alt="...">
-  </a>
-  <div class="card-body">
-    <h3 class="card-title">{{tweet.title}}</h5>
-    <h5 class="card-title">{{tweet.user.username}}</h5>
-    <p class="card-text">{{tweet.text|slice:":10"}}</p>
-    {% if tweet.user.id == user.id %}
-    <a href="{% url 'tweet_edit' tweet.id%}" class="btn btn-primary">Edit</a>
-    <a href="{% url 'tweet_delete' tweet.id%}" class="btn btn-primary">Delete</a>
-    {% endif %}
-  </div>
-</div>
+  <div class="row g-4 justify-content-center">
+    {% for tweet in tweets %}
+    <div class="col-md-4 col-sm-6">
+      <div class="card glass-card border-0 shadow-lg rounded-4 h-100">
+        <a href="{% url 'tweet' tweet.user.id %}">
+          <img src="{{ tweet.photo.url }}" class="card-img-top rounded-top" alt="{{ tweet.title }}">
+        </a>
+        <div class="card-body text-light">
+          <h4 class="card-title fw-bold">{{ tweet.title }}</h4>
+          <h6 class="text-warning mb-2">@{{ tweet.user.username }}</h6>
+          <p class="card-text">{{ tweet.text|slice:":50" }}...</p>
+          {% if tweet.user.id == user.id %}
+          <div class="d-flex justify-content-between mt-3">
+            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-light btn-sm">Edit</a>
+            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
     {% endfor %}
-</div>
+  </div>
   {% else %}
     <p class="text-center">You haven't posted any tweets yet.</p>
   {% endif %}
