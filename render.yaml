@@ -4,8 +4,9 @@ services:
     env: python
     buildCommand: |
       pip install -r requirements.txt
+      cd tweeter
       python manage.py migrate
-    startCommand: "gunicorn tweeter.wsgi:application"
+    startCommand: "cd tweeter && gunicorn tweeter.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: "tweeter.settings"
