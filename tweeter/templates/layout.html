@@ -1,65 +1,861 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% block head %}
-    {% endblock %}
-    <title>
-        {% block title%}
-        Document
-        {% endblock %}
-    </title>
-</head>
-<body class='bg-secondary text-white'>
-    <nav class="navbar navbar-expand-lg shadow-sm sticky-top" style="background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-light" href="{% url 'tweet_list' %}">Tweetster</a>
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active fw-semibold text-light" href="{% url 'tweet_list' %}">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link fw-semibold text-light" href="{% url 'my_tweets' %}">My Tweets</a>
-        </li>
-      </ul>
-      <form class="d-flex align-items-center me-3" method="get" action="{% url 'tweet_search' %}">
-  <input class="form-control form-control-sm bg-light text-dark border-0 rounded-start me-3" 
-         style="width: 180px;" 
-         type="search" name="q" placeholder="Search tweets" aria-label="Search">
-  <button class="btn btn-outline-light btn-sm rounded-end" type="submit">Search</button>
-</form>
-      <ul class="navbar-nav mb-2 mb-lg-0">
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-          <form method="post" action="{% url 'logout' %}" class="d-flex align-items-center">
-            {% csrf_token %}
-            <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
-          </form>
-        </li>
-        {% else %}
-        <li class="nav-item me-2">
-          <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
-        </li>
-        <li class="nav-item">
-          <a href="{% url 'register' %}" class="btn btn-light btn-sm">Register</a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Tweetster{% endblock %}</title>
 
-    {% block content %}
-    <h1 class=" text-light text-center"> Hii I am Pratham Sharma, Welcome to my project to go to main website click on Home button</h1>
-    {% endblock %}
-</body>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --success-gradient: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
+        --dark-gradient: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.18);
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0b0;
+        --shadow-primary: 0 8px 32px rgba(31, 38, 135, 0.37);
+        --shadow-hover: 0 15px 35px rgba(31, 38, 135, 0.5);
+        --border-radius-sm: 10px;
+        --border-radius-md: 16px;
+        --border-radius-lg: 24px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--dark-gradient);
+        color: var(--text-primary);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .display-1,
+      .display-2,
+      .display-3,
+      .display-4,
+      .display-5,
+      .display-6 {
+        font-family: "Poppins", sans-serif;
+        letter-spacing: -0.02em;
+      }
+
+      /* Animated Background */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle at 15% 40%,
+            rgba(120, 119, 198, 0.25) 0%,
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 85% 25%,
+            rgba(255, 119, 198, 0.25) 0%,
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 50% 80%,
+            rgba(120, 200, 255, 0.25) 0%,
+            transparent 45%
+          );
+        z-index: -1;
+        animation: backgroundShift 20s ease-in-out infinite alternate;
+      }
+
+      @keyframes backgroundShift {
+        0% {
+          opacity: 0.3;
+          transform: scale(1) rotate(0deg);
+        }
+        100% {
+          opacity: 0.6;
+          transform: scale(1.15) rotate(2deg);
+        }
+      }
+
+      /* Enhanced Navbar */
+      .navbar {
+        background: rgba(10, 10, 15, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+        padding: 0.8rem 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .navbar-brand {
+        font-size: 1.75rem;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+        transition: all 0.3s ease;
+      }
+
+      .navbar-brand:hover {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+      }
+
+      .nav-link {
+        font-weight: 500;
+        color: var(--text-secondary) !important;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 0.5rem 1rem !important;
+        border-radius: var(--border-radius-sm);
+        margin: 0 0.15rem;
+      }
+
+      .nav-link:hover {
+        color: var(--text-primary) !important;
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background: var(--accent-gradient);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+
+      .nav-link:hover::after {
+        width: 80%;
+      }
+
+      /* Enhanced Buttons */
+      .btn-custom {
+        border: none;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-transform: none;
+        letter-spacing: 0.025em;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-custom::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+        z-index: 1;
+      }
+
+      .btn-custom:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary-custom {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary-custom:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        color: white;
+      }
+
+      .btn-secondary-custom {
+        background: var(--secondary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+      }
+
+      .btn-secondary-custom:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+        color: white;
+      }
+
+      .btn-success-custom {
+        background: var(--success-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(60, 186, 146, 0.4);
+      }
+
+      .btn-success-custom:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(60, 186, 146, 0.6);
+        color: white;
+      }
+
+      .btn-outline-custom {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: var(--text-primary);
+        backdrop-filter: blur(10px);
+        box-shadow: none;
+      }
+
+      .btn-outline-custom:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        color: var(--text-primary);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .btn-lg {
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+      }
+
+      /* Enhanced Search Bar */
+      .search-container {
+        position: relative;
+      }
+
+      .search-input {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 25px;
+        color: var(--text-primary);
+        padding: 0.6rem 1.2rem;
+        padding-left: 2.5rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .search-input:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(79, 172, 254, 0.5);
+        box-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
+        color: var(--text-primary);
+        outline: none;
+        transform: translateY(-1px);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        z-index: 5;
+      }
+
+      /* Glassmorphism Cards */
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-primary);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .glass-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+      }
+
+      .glass-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      /* Card images transition */
+      .glass-card img {
+        transition: transform 0.5s ease;
+      }
+
+      .glass-card:hover img {
+        transform: scale(1.05);
+      }
+
+      /* Enhanced Footer */
+      .footer {
+        background: rgba(10, 10, 15, 0.9);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 2rem 0;
+        margin-top: 4rem;
+        position: relative;
+      }
+
+      .footer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+      }
+
+      .social-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+      }
+
+      .social-links a:hover {
+        transform: translateY(-3px) scale(1.1);
+        background: var(--primary-gradient);
+        color: white !important;
+      }
+
+      /* Scrollbar Enhancement */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary-gradient);
+      }
+
+      /* Loading Animation */
+      .loading-dots {
+        display: inline-flex;
+        position: relative;
+        width: 80px;
+        height: 20px;
+        justify-content: center;
+      }
+
+      .loading-dots div {
+        width: 8px;
+        height: 8px;
+        margin: 0 4px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        animation: loading-bounce 1.4s infinite ease-in-out both;
+      }
+
+      .loading-dots div:nth-child(1) {
+        animation-delay: -0.32s;
+      }
+
+      .loading-dots div:nth-child(2) {
+        animation-delay: -0.16s;
+      }
+
+      @keyframes loading-bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+
+      /* Text effects */
+      .gradient-text {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .secondary-gradient-text {
+        background: var(--secondary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .accent-gradient-text {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Badge enhancements */
+      .badge {
+        padding: 0.4em 0.8em;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+      }
+
+      .bg-primary-custom {
+        background: var(--primary-gradient);
+      }
+
+      .bg-secondary-custom {
+        background: var(--secondary-gradient);
+      }
+
+      /* Responsive Enhancements */
+      @media (max-width: 768px) {
+        .navbar-brand {
+          font-size: 1.5rem;
+        }
+
+        .glass-card:hover {
+          transform: translateY(-4px) scale(1.01);
+        }
+
+        .btn-custom {
+          padding: 0.6rem 1.2rem;
+          font-size: 0.9rem;
+        }
+
+        body::before {
+          background-size: 200% 200%;
+        }
+      }
+
+      /* Page Transitions */
+      .page-transition {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Dropdown menu styling */
+      .dropdown-menu {
+        background: rgba(15, 15, 20, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--border-radius-sm);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        min-width: 180px;
+      }
+
+      .dropdown-item {
+        color: var(--text-secondary);
+        border-radius: var(--border-radius-sm);
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.25rem;
+        transition: all 0.3s ease;
+      }
+
+      .dropdown-item:hover,
+      .dropdown-item:focus {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+        transform: translateX(3px);
+      }
+
+      .dropdown-item:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Form controls styling */
+      .form-control,
+      .form-select {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: var(--border-radius-sm);
+        color: var(--text-primary);
+        padding: 0.7rem 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(79, 172, 254, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.15);
+        color: var(--text-primary);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+
+      textarea.form-control {
+        min-height: 120px;
+      }
+
+      /* Form label enhancement */
+      .form-label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Toast notifications */
+      .toast {
+        background: rgba(15, 15, 20, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--border-radius-sm);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .toast-header {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .toast-body {
+        color: var(--text-secondary);
+      }
+    </style>
+
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container-fluid px-4">
+        <a
+          class="navbar-brand d-flex align-items-center"
+          href="{% url 'tweet_list' %}"
+        >
+          <i class="fab fa-twitter me-2"></i>Tweetster
+        </a>
+
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tweet_list' %}">
+                <i class="fas fa-home me-1"></i>Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'my_tweets' %}">
+                <i class="fas fa-user me-1"></i>My Tweets
+              </a>
+            </li>
+          </ul>
+
+          <!-- Enhanced Search Bar -->
+          <form
+            class="d-flex align-items-center me-4"
+            method="get"
+            action="{% url 'tweet_search' %}"
+          >
+            <div class="search-container position-relative">
+              <i class="fas fa-search search-icon"></i>
+              <input
+                class="search-input border-0"
+                type="search"
+                name="q"
+                placeholder="Search tweets..."
+              />
+            </div>
+            <button class="btn btn-outline-custom btn-sm ms-2" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+
+          <!-- Auth Buttons -->
+          <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle d-flex align-items-center"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <div class="d-flex align-items-center">
+                  <div
+                    class="me-2"
+                    style="
+                      width: 28px;
+                      height: 28px;
+                      background: var(--primary-gradient);
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <i class="fas fa-user-alt" style="font-size: 0.8rem"></i>
+                  </div>
+                  <span>{{ user.username }}</span>
+                </div>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="{% url 'my_tweets' %}">
+                    <i class="fas fa-feather-alt me-2"></i>My Tweets
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'tweet_create' %}">
+                    <i class="fas fa-plus me-2"></i>New Tweet
+                  </a>
+                </li>
+                <li>
+                  <hr
+                    class="dropdown-divider"
+                    style="border-color: rgba(255, 255, 255, 0.08)"
+                  />
+                </li>
+                <li>
+                  <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="dropdown-item text-danger" type="submit">
+                      <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item me-2">
+              <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{% url 'register' %}"
+                class="btn btn-primary-custom btn-sm"
+              >
+                <i class="fas fa-user-plus me-1"></i>Register
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container-fluid px-4 py-5 page-transition">
+      {% block content %}
+      <div class="text-center">
+        <h1 class="display-4 mb-4 gradient-text">Welcome to Tweetster</h1>
+        <p class="lead text-secondary">Share your thoughts with the world</p>
+      </div>
+      {% endblock %}
+    </main>
+
+    <!-- ENHANCED FOOTER -->
+    <footer class="footer text-center py-4">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-6 text-md-start">
+            <p class="mb-0 text-secondary">
+              &copy; 2025 Tweetster | Built by
+              <span class="secondary-gradient-text fw-semibold"
+                >Pratham Sharma</span
+              >
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end mt-3 mt-md-0">
+            <div class="social-links">
+              <a href="#" class="text-secondary me-2"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="text-secondary me-2"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="text-secondary me-2"
+                ><i class="fab fa-github"></i
+              ></a>
+              <a href="#" class="text-secondary"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS for Enhanced Interactions -->
+    <script>
+      // Smooth scroll behavior
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // Add loading state to forms
+      document.querySelectorAll("form").forEach((form) => {
+        form.addEventListener("submit", function () {
+          const submitBtn = this.querySelector('button[type="submit"]');
+          if (submitBtn && !submitBtn.classList.contains("no-loading")) {
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.innerHTML =
+              '<div class="loading-dots"><div></div><div></div><div></div></div>';
+            submitBtn.disabled = true;
+
+            // Store original content to restore on error
+            submitBtn.setAttribute("data-original-content", originalContent);
+
+            // Set a timeout to revert the button if the form takes too long
+            setTimeout(() => {
+              if (submitBtn.disabled) {
+                submitBtn.innerHTML = submitBtn.getAttribute(
+                  "data-original-content"
+                );
+                submitBtn.disabled = false;
+              }
+            }, 8000);
+          }
+        });
+      });
+
+      // Add active class to current nav item
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll(".navbar-nav .nav-link").forEach((link) => {
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("active");
+            link.style.color = "var(--text-primary) !important";
+            link.style.background = "rgba(255, 255, 255, 0.08)";
+          }
+        });
+
+        // Animate elements with page-transition class
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.style.animationDelay = Math.random() * 0.3 + "s";
+                entry.target.classList.add("page-transition");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1 }
+        );
+
+        document
+          .querySelectorAll(".glass-card, .animate-on-scroll")
+          .forEach((el) => {
+            observer.observe(el);
+          });
+      });
+    </script>
+  </body>
 </html>

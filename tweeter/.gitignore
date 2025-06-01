@@ -1,0 +1,41 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+twit/
+env/
+venv/
+
+# Django/migrations
+*/migrations/
+*.sqlite3
+*.db
+
+# Secret configuration
+.env
+*.env
+
+# Static and media
+staticfiles/
+media/
+
+# VSCode and IDEs
+.vscode/
+.idea/
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Python tools
+*.log
+*.pot
+*.pyc
+
+# Local export/import
+data.json
+
+# Compiled files
+*.mo

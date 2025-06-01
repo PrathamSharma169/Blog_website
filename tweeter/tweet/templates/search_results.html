@@ -1,48 +1,71 @@
 {% extends 'layout.html' %}
 {% block head %}
 <style>
-.glass-card {
-  background-color: rgba(33, 37, 41, 0.75); /* dark glassy */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: white;
-  transition: transform 0.2s ease;
-}
-.glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
+  .search-header {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .search-highlight {
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 </style>
-
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="text-light mb-4">Search Results for "{{ query }}"</h2>
-  
+<div class="container py-5">
+  <div class="search-header text-center">
+    <h2 class="display-5 fw-bold mb-3">Search Results for <span class="search-highlight">"{{ query }}"</span></h2>
+    <p class="text-secondary">{{ tweets|length }} results found</p>
+  </div>
+
   {% if tweets %}
-    <div class="row g-4 justify-content-center">
-      {% for tweet in tweets %}
-      <div class="col-md-4">
-        <div class="card glass-card border-0 shadow-lg rounded-4 h-100">
-          <a href="{% url 'tweet' tweet.user.id %}">
-            <img src="{{ tweet.photo.url }}" class="card-img-top" alt="{{ tweet.title }}">
-          </a>
-          <div class="card-body text-light">
-            <h4 class="card-title fw-bold">{{ tweet.title }}</h4>
-            <h6 class="text-warning">@{{ tweet.user.username }}</h6>
-            <p class="card-text">{{ tweet.text|truncatechars:50 }}</p>
-            {% if tweet.user.id == user.id %}
-            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-light btn-sm">Edit</a>
-            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
-            {% endif %}
+  <div class="row g-4">
+    {% for tweet in tweets %}
+    <div class="col-md-6 col-lg-4">
+      <div class="glass-card h-100">
+        <a href="{% url 'tweet' tweet.id %}" class="text-decoration-none">
+          <div class="ratio ratio-16x9">
+            <img src="{{ tweet.photo.url }}" class="card-img-top object-fit-cover" alt="{{ tweet.title }}">
           </div>
+        </a>
+        <div class="card-body">
+          <h5 class="fw-bold text-light">{{ tweet.title }}</h5>
+          <p class="text-warning mb-3">@{{ tweet.user.username }}</p>
+          <p class="text-secondary">{{ tweet.text|truncatechars:120 }}</p>
+          
+          {% if tweet.user.id == user.id %}
+          <div class="d-flex justify-content-between pt-3 border-top border-secondary">
+            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-custom btn-sm">
+              <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">
+              <i class="fas fa-trash me-1"></i>Delete
+            </a>
+          </div>
+          {% endif %}
         </div>
       </div>
-      {% endfor %}
     </div>
+    {% endfor %}
+  </div>
   {% else %}
-    <p class="text-light">No tweets found.</p>
+  <div class="text-center py-5 my-5">
+    <div class="glass-card p-5">
+      <i class="fas fa-search display-1 text-secondary mb-4"></i>
+      <h3 class="text-light mb-3">No Results Found</h3>
+      <p class="text-secondary mb-4">Try searching with different keywords or create a new tweet.</p>
+      <a href="{% url 'tweet_create' %}" class="btn btn-primary-custom">
+        <i class="fas fa-plus me-2"></i>Create New Tweet
+      </a>
+    </div>
+  </div>
   {% endif %}
 </div>
 {% endblock %}

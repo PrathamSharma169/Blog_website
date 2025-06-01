@@ -1,9 +1,212 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block title %}Welcome to Tweetster{% endblock %}
+{% block head %}
+<style>
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 0;
+  }
 
-{% block title %}
-new page
-{% endblock %}
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 10% 20%,
+        rgba(120, 119, 198, 0.3) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 90% 30%,
+        rgba(255, 119, 198, 0.3) 0%,
+        transparent 50%
+      );
+    z-index: -1;
+    transform: translateZ(-10px);
+  }
 
-{% block content %}
-new page
+  .hero-title {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .cta-button {
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .cta-button:hover {
+    transform: translateY(-5px);
+  }
+
+  .cta-button:active {
+    transform: translateY(0);
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: translateY(-8px) scale(1.1);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .floating {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 3rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7 mb-5 mb-lg-0">
+        <h1 class="hero-title mb-4">
+          <span class="gradient-text">Share Your Voice</span><br />
+          <span class="text-white">With the World</span>
+        </h1>
+        <p class="lead text-secondary mb-5 pe-lg-5">
+          Connect, engage, and share your thoughts with our vibrant community.
+          Discover new perspectives and make your voice heard on Tweetster.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a
+            href="{% url 'tweet_list' %}"
+            class="btn btn-primary-custom btn-lg px-5 py-3 cta-button"
+          >
+            <i class="fas fa-comments me-2"></i>Explore Tweets
+          </a>
+          <a
+            href="{% url 'tweet_create' %}"
+            class="btn btn-secondary-custom btn-lg px-5 py-3 cta-button"
+          >
+            <i class="fas fa-plus me-2"></i>Create Tweet
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center">
+        <div class="position-relative floating">
+          <img
+            src="https://via.placeholder.com/500x400?text=Tweetster"
+            alt="Tweetster Illustration"
+            class="img-fluid rounded-4"
+            style="box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3)"
+          />
+          <div
+            class="position-absolute top-0 end-0 translate-middle-y"
+            style="transform: rotate(15deg)"
+          >
+            <div class="glass-card p-3" style="width: 120px">
+              <i class="fas fa-heart text-danger mb-2 fs-4"></i>
+              <p class="mb-0 small">Share what you love</p>
+            </div>
+          </div>
+          <div
+            class="position-absolute bottom-0 start-0 translate-middle-y"
+            style="transform: rotate(-10deg)"
+          >
+            <div class="glass-card p-3" style="width: 120px">
+              <i class="fas fa-comments accent-gradient-text mb-2 fs-4"></i>
+              <p class="mb-0 small">Join conversations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 mt-5">
+  <div class="container">
+    <h2 class="text-center gradient-text fw-bold mb-5">
+      Why Choose Tweetster?
+    </h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-bolt secondary-gradient-text"></i>
+          </div>
+          <h3 class="fw-bold mb-3">Fast & Seamless</h3>
+          <p class="text-secondary mb-0">
+            Share your thoughts instantly with our lightning-fast platform
+            designed for the modern social experience.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt accent-gradient-text"></i>
+          </div>
+          <h3 class="fw-bold mb-3">Secure & Private</h3>
+          <p class="text-secondary mb-0">
+            Your data is protected with industry-standard security measures
+            ensuring your privacy at all times.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users gradient-text"></i>
+          </div>
+          <h3 class="fw-bold mb-3">Vibrant Community</h3>
+          <p class="text-secondary mb-0">
+            Connect with like-minded individuals and build meaningful
+            relationships in our growing community.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 text-center">
+  <div class="container">
+    <div class="glass-card p-5">
+      <h2 class="gradient-text fw-bold mb-4">Ready to Join?</h2>
+      <p class="text-secondary mb-4">
+        Create an account now and start sharing your thoughts with the world.
+      </p>
+      <a
+        href="{% url 'register' %}"
+        class="btn btn-primary-custom btn-lg px-5 py-3"
+      >
+        <i class="fas fa-user-plus me-2"></i>Sign Up Now
+      </a>
+    </div>
+  </div>
+</section>
 {% endblock %}

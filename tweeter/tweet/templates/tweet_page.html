@@ -1,57 +1,180 @@
-{% extends "layout.html" %}
-{% block head %}
+{% extends "layout.html" %} {% block head %}
 <style>
-.glassy-bg {
-  background-color: rgba(33, 37, 41, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+  .tweet-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-.fixed-img-container {
-  width: 100%;
-  max-width: 350px;  /* increased width */
-  min-width: 300px;  /* increased min width */
-  padding: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
+  .tweet-header {
+    margin-bottom: 2rem;
+  }
 
-.fixed-img {
-  max-height: 400px;  /* increased height */
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  border-radius: 0.5rem 0 0 0.5rem;
-}
+  .tweet-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .tweet-image {
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    {% comment %} transition: transform 0.5s ease, box-shadow 0.5s ease; {% endcomment %}
+  }
+
+  .tweet-image:hover {
+    {% comment %} transform: scale(1.02); {% endcomment %}
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  } 
+
+  .tweet-meta {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .tweet-author {
+    display: flex;
+    align-items: center;
+  }
+
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 1rem;
+  }
+
+  .tweet-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .tweet-content {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    color: var(--text-secondary);
+  }
+
+  .tweet-actions {
+    margin-top: 3rem;
+  }
+
+  .action-btn {
+    min-width: 120px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 2rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .back-link:hover {
+    color: var(--text-primary);
+    transform: translateX(-5px);
+  } 
+
+  @media (max-width: 768px) {
+    .tweet-title {
+      font-size: 2rem;
+    }
+  }
 </style>
-{% endblock %}
+{% endblock %} {% block title %}{{ tweet.title }}{% endblock %}
+ {% block content%}
+<div class="container py-5">
+  <div class="tweet-container">
+    <div class="tweet-header">
+      <h1 class="tweet-title gradient-text">{{ tweet.title }}</h1>
 
+      <div class="tweet-meta">
+        <div class="tweet-author me-auto">
+          <div class="author-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-white">@{{ tweet.user.username }}</div>
+            <div class="tweet-date">
+              {{ tweet.created_at|date:"F j, Y • g:i A" }}
+            </div>
+          </div>
+        </div>
 
-
-{% block title %}
-Tweet
-{% endblock %}
-
-{% block content %}
-<div class="container my-5">
-  <div class="d-flex flex-md-row flex-column glassy-bg rounded-4 shadow-lg text-light overflow-hidden">
-
-    <!-- Fixed Image on Left -->
-    {% if tweet.photo %}
-    <div class="fixed-img-container">
-      <img src="{{ tweet.photo.url }}" class="fixed-img" alt="Tweet image">
+        {% if tweet.user.id == user.id %}
+        <div class="d-flex gap-2">
+          <a
+            href="{% url 'tweet_edit' tweet.id %}"
+            class="btn btn-outline-custom btn-sm"
+          >
+            <i class="fas fa-edit me-1"></i>Edit
+          </a>
+          <a
+            href="{% url 'tweet_delete' tweet.id %}"
+            class="btn btn-outline-danger btn-sm"
+          >
+            <i class="fas fa-trash me-1"></i>Delete
+          </a>
+        </div>
+        {% endif %}
+      </div>
     </div>
-    {% endif %}
 
-    <!-- Text Content on Right -->
-    <div class="flex-grow-1 p-4">
-      <h1 class="fw-bold mb-2">{{ tweet.title }}</h1>
-      <h5 class="text-warning mb-3">by @{{ tweet.user.username }}</h5>
-      <p class="fs-5">{{ tweet.text }}</p>
+    <div class="glass-card p-0 overflow-hidden mb-4">
+      {% if tweet.photo %}
+      <img
+        src="{{ tweet.photo.url }}"
+        class="tweet-image"
+        alt="{{ tweet.title }}"
+      />
+      {% endif %}
+
+      <div class="p-4 p-md-5">
+        <div class="tweet-content">{{ tweet.text|linebreaksbr }}</div>
+
+        <div
+          class="d-flex flex-wrap justify-content-between align-items-center"
+        >
+          <div class="d-flex gap-2 mb-3 mb-md-0">
+            <button class="btn btn-outline-custom btn-sm" disabled>
+              <i class="far fa-heart me-1"></i>Like
+            </button>
+            <button class="btn btn-outline-custom btn-sm" disabled>
+              <i class="far fa-comment me-1"></i>Comment
+            </button>
+            <button class="btn btn-outline-custom btn-sm" disabled>
+              <i class="fas fa-share me-1"></i>Share
+            </button>
+          </div>
+
+          <a href="{% url 'tweet_list' %}" class="back-link">
+            <i class="fas fa-arrow-left me-2"></i>Back to All Tweets
+          </a>
+        </div>
+      </div>
     </div>
 
+    <div class="glass-card p-4 p-md-5">
+      <h3 class="fw-bold mb-4">Related Tweets</h3>
+      <div class="text-center py-4">
+        <p class="text-secondary mb-4">Feature coming soon!</p>
+        <a href="{% url 'tweet_list' %}" class="btn btn-primary-custom">
+          <i class="fas fa-th-large me-2"></i>Browse All Tweets
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,55 +1,259 @@
-{% extends "layout.html" %}
-{% block head %}
+{% extends "layout.html" %} {% block head %}
 <style>
-.glass-card {
-  background-color: rgba(33, 37, 41, 0.75); /* dark glassy */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: white;
-  transition: transform 0.2s ease;
-}
-.glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
+  .profile-header {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 20% 30%,
+        rgba(102, 126, 234, 0.2) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(245, 87, 108, 0.2) 0%,
+        transparent 50%
+      );
+    z-index: -1;
+  }
+
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 1.5rem;
+  }
+
+  .tweet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.8rem;
+  }
+
+  .tweet-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .tweet-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 70%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+    border-radius: var(--border-radius-md);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .tweet-card:hover::after {
+    opacity: 1;
+  }
+
+  .tweet-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+  }
+
+  .tweet-image {
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.5s ease;
+  }
+
+  .tweet-card:hover .tweet-image {
+    transform: scale(1.08);
+  }
+
+  .tweet-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
+  }
+
+  .tweet-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tweet-text {
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .tweet-actions {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .tweet-card:hover .tweet-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 5rem 0;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .profile-header {
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      margin: 0 auto 1.5rem;
+    }
+  }
 </style>
-
-{% endblock %}
-
-{% block title %}
-new page
-{% endblock %}
-
-{% block content %}
-{% comment %} <a class= "btn btn-primary mb-4" href="{% url 'tweet_create' %}" >Create a Tweet </a> {% endcomment %}
-<h2 class="text-center mt-4">My Tweets</h2>
-
-<div class="container mt-3">
-  {% if tweets %}
-  <div class="row g-4 justify-content-center">
-    {% for tweet in tweets %}
-    <div class="col-md-4 col-sm-6">
-      <div class="card glass-card border-0 shadow-lg rounded-4 h-100">
-        <a href="{% url 'tweet' tweet.user.id %}">
-          <img src="{{ tweet.photo.url }}" class="card-img-top rounded-top" alt="{{ tweet.title }}">
-        </a>
-        <div class="card-body text-light">
-          <h4 class="card-title fw-bold">{{ tweet.title }}</h4>
-          <h6 class="text-warning mb-2">@{{ tweet.user.username }}</h6>
-          <p class="card-text">{{ tweet.text|slice:":50" }}...</p>
-          {% if tweet.user.id == user.id %}
-          <div class="d-flex justify-content-between mt-3">
-            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-light btn-sm">Edit</a>
-            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+{% endblock %} {% block title %}My Tweets{% endblock %} {% block content %}
+<div class="container">
+  <div class="profile-header">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center flex-column flex-md-row">
+          <div class="profile-avatar me-md-4">
+            <i class="fas fa-user"></i>
           </div>
-          {% endif %}
+          <div>
+            <h1 class="display-5 fw-bold mb-2">My Tweets</h1>
+            <p class="text-secondary mb-0">
+              Manage all your personal content in one place
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-center text-md-end mt-4 mt-md-0">
+        <a
+          href="{% url 'tweet_create' %}"
+          class="btn btn-primary-custom btn-lg"
+        >
+          <i class="fas fa-plus me-2"></i>New Tweet
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if tweets %}
+  <div class="tweet-grid">
+    {% for tweet in tweets %}
+    <div class="glass-card tweet-card animate-on-scroll">
+      <a href="{% url 'tweet' tweet.id %}" class="text-decoration-none">
+        <div class="tweet-image-container">
+          <img
+            src="{{ tweet.photo.url }}"
+            class="tweet-image"
+            alt="{{ tweet.title }}"
+          />
+        </div>
+      </a>
+      <div class="tweet-content">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h3 class="tweet-title text-white mb-0">{{ tweet.title }}</h3>
+          <span class="badge bg-primary-custom rounded-pill"
+            >@{{ tweet.user.username }}</span
+          >
+        </div>
+        <p class="tweet-text">{{ tweet.text|truncatechars:100 }}</p>
+
+        <div class="tweet-actions">
+          <a
+            href="{% url 'tweet' tweet.id %}"
+            class="btn btn-outline-custom btn-sm"
+          >
+            <i class="fas fa-eye me-1"></i>View
+          </a>
+          <div class="d-flex gap-2">
+            <a
+              href="{% url 'tweet_edit' tweet.id %}"
+              class="btn btn-outline-custom btn-sm"
+            >
+              <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <a
+              href="{% url 'tweet_delete' tweet.id %}"
+              class="btn btn-outline-danger btn-sm"
+            >
+              <i class="fas fa-trash me-1"></i>
+            </a>
+          </div>
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
-    <p class="text-center">You haven't posted any tweets yet.</p>
+  <div class="empty-state">
+    <div class="glass-card p-5">
+      <i
+        class="fas fa-feather-alt display-1 text-secondary mb-4 empty-icon"
+      ></i>
+      <h2 class="fw-bold mb-3">No Tweets Yet</h2>
+      <p class="text-secondary mb-4">
+        You haven't shared any thoughts with the world yet.
+      </p>
+      <a
+        href="{% url 'tweet_create' %}"
+        class="btn btn-primary-custom btn-lg px-4 py-2"
+      >
+        <i class="fas fa-plus me-2"></i>Create Your First Tweet
+      </a>
+    </div>
+  </div>
   {% endif %}
 </div>
 {% endblock %}

@@ -1,61 +1,250 @@
-{% extends "layout.html" %}
-{% block head %}
+{% extends "layout.html" %} {% block head %}
 <style>
-  .glass-card {
-    background-color: rgba(33, 37, 41, 0.75); /* Dark translucent */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    color: white;
-    transition: transform 0.2s ease;
+  .tweet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.8rem;
+    padding: 1.5rem 0;
   }
 
-  .glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  .create-section {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 0;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .create-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 10% 50%,
+        rgba(120, 119, 198, 0.2) 0%,
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 90% 50%,
+        rgba(255, 119, 198, 0.2) 0%,
+        transparent 40%
+      );
+    z-index: -1;
+  }
+
+  .create-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+  }
+
+  .create-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+  }
+
+  .tweet-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tweet-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+  }
+
+  .tweet-image {
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.5s ease;
+  }
+
+  .tweet-card:hover .tweet-image {
+    transform: scale(1.08);
+  }
+
+  .tweet-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
+  }
+
+  .tweet-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.6rem;
+  }
+
+  .tweet-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .tweet-actions {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+
+  .tweet-card:hover .tweet-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .user-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .tweet-card:hover .user-badge {
+    background: var(--primary-gradient);
+    transform: translateY(-3px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 5rem 0;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  @media (max-width: 576px) {
+    .tweet-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
   }
 </style>
-{% endblock %}
-
-{% block content %}
-<div class="text-center my-4">
-  <a class="btn btn-success btn-lg shadow" href="{% url 'tweet_create' %}">+ Create a Tweet</a>
-</div>
-
+{% endblock %} {% block content %}
 <div class="container">
-  <div class="row g-4 justify-content-center">
+  <div class="create-section">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-8">
+        <h1 class="display-5 fw-bold mb-4 gradient-text">
+          Your Thoughts Matter
+        </h1>
+        <p class="lead text-secondary mb-5">
+          Share what's on your mind and connect with others in our community.
+        </p>
+        <a
+          href="{% url 'tweet_create' %}"
+          class="btn btn-primary-custom create-btn btn-lg px-5 py-3"
+        >
+          <i class="fas fa-plus me-2"></i>Create a Tweet
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if tweets %}
+  <div class="mb-4">
+    <h2 class="fw-bold mb-0">Latest Tweets</h2>
+    <p class="text-secondary">Discover what people are sharing</p>
+  </div>
+
+  <div class="tweet-grid">
     {% for tweet in tweets %}
-    <div class="col-md-4 col-sm-6">
-      <div class="card glass-card border-0 shadow-lg rounded-4 h-100 overflow-hidden">
+    <div class="glass-card tweet-card animate-on-scroll">
+      <div class="tweet-image-wrapper">
+        <img
+          src="{{ tweet.photo.url }}"
+          class="tweet-image"
+          alt="{{ tweet.title }}"
+        />
+        <div class="user-badge">
+          <i class="fas fa-user-circle me-1"></i>@{{ tweet.user.username }}
+        </div>
+      </div>
 
-        <!-- Tweet Image -->
-        <img src="{{ tweet.photo.url }}" class="card-img-top rounded-top" alt="{{ tweet.title }}" style="height: 200px; object-fit: cover;">
+      <div class="tweet-content">
+        <h3 class="tweet-title">{{ tweet.title }}</h3>
+        <p class="tweet-text">{{ tweet.text }}</p>
 
-        <!-- Card Content -->
-        <div class="card-body text-light p-0 d-flex flex-column justify-content-between h-100">
+        <div class="tweet-actions">
+          <a
+            href="{% url 'tweet' tweet.id %}"
+            class="btn btn-outline-custom btn-sm"
+          >
+            <i class="fas fa-eye me-1"></i>View
+          </a>
 
-          <!-- Title & Username Layer -->
-          <div class="p-3 bg-dark bg-opacity-50 border-bottom border-secondary">
-            <h4 class="card-title fw-bold mb-1">{{ tweet.title }}</h4>
-            <h6 class="text-warning mb-0">@{{ tweet.user.username }}</h6>
+          {% if tweet.user.id == user.id %}
+          <div class="d-flex gap-2">
+            <a
+              href="{% url 'tweet_edit' tweet.id %}"
+              class="btn btn-outline-custom btn-sm"
+            >
+              <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <a
+              href="{% url 'tweet_delete' tweet.id %}"
+              class="btn btn-outline-danger btn-sm"
+            >
+              <i class="fas fa-trash me-1"></i>
+            </a>
           </div>
-
-          <!-- Tweet Text Layer -->
-          <div class="p-3 bg-white text-dark flex-grow-1 d-flex flex-column justify-content-between">
-            <p class="card-text mb-2">{{ tweet.text|slice:":50" }}... <a href="{% url 'tweet' tweet.id %}">Read more</a></p>
-
-            {% if tweet.user.id == user.id %}
-            <div class="d-flex justify-content-between mt-2">
-              <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-outline-dark btn-sm">Edit</a>
-              <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
-            </div>
-            {% endif %}
-          </div>
-
+          {% endif %}
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="glass-card p-5">
+      <i class="fas fa-feather-alt empty-icon"></i>
+      <h2 class="fw-bold mb-3">No Tweets Yet</h2>
+      <p class="text-secondary mb-4">
+        Be the first to share your thoughts with the community.
+      </p>
+      <a
+        href="{% url 'tweet_create' %}"
+        class="btn btn-primary-custom btn-lg px-4 py-2"
+      >
+        <i class="fas fa-plus me-2"></i>Create First Tweet
+      </a>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
-
