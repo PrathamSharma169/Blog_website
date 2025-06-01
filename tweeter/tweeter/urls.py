@@ -26,7 +26,8 @@ urlpatterns = [
     path('tweet/',include('tweet.urls')),
     path('accounts/',include('django.contrib.auth.urls')),
     path('',views.home, name='home'),
-    path("run-setup/", views.run_setup_view),  # 🔐 REMOVE this after first deploy
+    path("run-collectstatic/", views.run_collectstatic),
+    path("make_migration/", views.run_migrations),  # 🔐 REMOVE this after first deploy
 
 
     # path("__reload__/", include("django_browser_reload.urls"))

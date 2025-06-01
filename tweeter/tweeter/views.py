@@ -9,14 +9,16 @@ from django.core.management import call_command
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
-def run_setup_view(request):
+def run_migrations(request):
     try:
         call_command('migrate')
-        
-        # ✅ Create a new superuser only if not already created
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser("pratham", "pratham@google.com", "Abcdef@123")
-        
-        return HttpResponse("✅ Migration complete. Superuser created.")
+        return HttpResponse("✅ Migrations applied successfully.")
     except Exception as e:
-        return HttpResponse(f"❌ Error: {type(e).__name__}<br>{e}")
+        return HttpResponse(f"❌ Error: {e}")
+    
+def run_collectstatic(request):
+    try:
+        call_command('collectstatic', '--noinput')
+        return HttpResponse("✅ collectstatic completed.")
+    except Exception as e:
+        return HttpResponse(f"❌ Error: {e}")
