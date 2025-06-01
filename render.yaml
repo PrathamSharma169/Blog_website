@@ -3,10 +3,10 @@ services:
     name: tweetster
     env: python
     buildCommand: "cd tweeter && pip install -r ../requirements.txt"
-    startCommand: "cd tweeter && gunicorn tweeter.wsgi:application"
+    startCommand: "cd tweeter && gunicorn tweeter.tweeter.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: "tweeter.settings"
+        value: "tweeter.tweeter.settings"
       - key: CLOUDINARY_CLOUD_NAME
         value: your_cloud_name
       - key: CLOUDINARY_API_KEY
