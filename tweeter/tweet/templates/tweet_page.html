@@ -148,7 +148,18 @@
           class="d-flex flex-wrap justify-content-between align-items-center"
         >
           <div class="d-flex gap-2 mb-3 mb-md-0">
-            <button class="btn btn-outline-custom btn-sm" disabled>
+            <button class="btn btn-outline-custom btn-sm">
+                <form method="post" action="{% url 'toggle_like' tweet.id %}">
+    {% csrf_token %}
+    <button type="submit">
+        {% if user in tweet.likes.all %}
+            ❤️ Unlike
+        {% else %}
+            🤍 Like
+        {% endif %}
+    </button>
+    <span>{{ tweet.like_count }} Likes</span>
+</form>
               <i class="far fa-heart me-1"></i>Like
             </button>
             <button class="btn btn-outline-custom btn-sm" disabled>

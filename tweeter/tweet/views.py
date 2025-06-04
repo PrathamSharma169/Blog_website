@@ -80,3 +80,15 @@ def search_tweets(request):
     if query:
         tweets = Tweet.objects.filter(Q(title__icontains=query))
     return render(request, 'search_results.html', {'tweets': tweets, 'query': query})
+
+@login_required
+def toggle_like(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    user = request.user
+
+    if user in tweet.likes.all():
+        tweet.likes.remove(user)
+    else:
+        tweet.likes.add(user)
+
+    return redirect('tweet_detail', tweet_id=tweet.id)
