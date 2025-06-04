@@ -91,4 +91,4 @@ def toggle_like(request, tweet_id):
     else:
         tweet.likes.add(user)
 
-    return redirect('tweet_detail', tweet_id=tweet.id)
+    return redirect('tweet', tweet_id=tweet.id)
