@@ -152,7 +152,7 @@
                 <form method="post" action="{% url 'toggle_like' tweet.id %}">
     {% csrf_token %}
     <button type="submit">
-        {% if user in tweet.likes.all %}
+        {% if tweet.user in tweet.likes.all %}
             ❤️ Unlike
         {% else %}
             🤍 Like
