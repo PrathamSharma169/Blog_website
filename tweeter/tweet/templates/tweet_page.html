@@ -192,11 +192,12 @@
     {% if user.is_authenticated %}
     <button class="btn btn-outline-custom btn-sm" id="like-btn" type='submit' data-id="{{ tweet.id }}">
     <span id="like-icon">
-    {% if user.is_authenticated and tweet.likes.all|user_liked:user %}
-        ❤️
+    {% if liked %}
+    ❤️
     {% else %}
-        🤍
+    🤍
     {% endif %}
+
 
     </span>
     <span id="like-count">{{ tweet.like_count }}</span>
