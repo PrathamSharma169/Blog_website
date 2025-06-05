@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404,redirect
-from .models import Tweet
+from .models import Tweet,Comment
 from .forms import Tweetform,UserRegistrationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -83,12 +85,39 @@ def search_tweets(request):
 
 @login_required
 def toggle_like(request, tweet_id):
+    if request.method == "POST":
+        tweet = Tweet.objects.get(id=tweet_id)
+        user = request.user
+
+        liked = False
+        if user in tweet.likes.all():
+            tweet.likes.remove(user)
+        else:
+            tweet.likes.add(user)
+            liked = True
+
+        return JsonResponse({
+            'liked': liked,
+            'like_count': tweet.likes.count()
+        })
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def comment(request, tweet_id):
+    tweet = Tweet.objects.get(id=tweet_id)
+
+    if request.method == 'POST':
+        comment_text = request.POST.get('comment')
+        if comment_text:
+            Comment.objects.create(tweet=tweet, user=request.user, text=comment_text)
+        return redirect('comment_list', tweet_id=tweet.id)  
+
+    return render(request, 'tweet_page.html', {'tweet': tweet})
+
+def comment_list(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)
-    user = request.user
+    comments = tweet.comments.all().order_by('-created_at')  # thanks to related_name='comments'
 
-    if user in tweet.likes.all():
-        tweet.likes.remove(user)
-    else:
-        tweet.likes.add(user)
-
-    return redirect('tweet', tweet_id=tweet.id)
+    return render(request, 'comment_list.html', {
+        'tweet': tweet,
+        'comments': comments
+    })

@@ -1,0 +1,74 @@
+{% extends "tweet_page.html" %}
+
+{% block comment %}
+<style>
+  .comments-section {
+    margin-top: 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .comments-section h2 {
+    color: var(--text-primary, #fff);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .comment-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color, #00bcd4);
+    transition: background 0.3s ease;
+  }
+
+  .comment-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .comment-user {
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    margin-bottom: 0.25rem;
+  }
+
+  .comment-text {
+    font-size: 1rem;
+    color: var(--text-secondary, #ccc);
+    margin-bottom: 0.5rem;
+  }
+
+  .comment-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaa);
+    text-align: right;
+  }
+
+  .no-comments {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    margin-top: 2rem;
+  }
+</style>
+
+<div class="comments-section">
+  <h2>💬 Comments on: {{ tweet.title }}</h2>
+
+  {% for c in comments %}
+    <div class="comment-card">
+      <div class="comment-user">@{{ c.user.username }}</div>
+      <div class="comment-text">{{ c.text }}</div>
+      <div class="comment-date">{{ c.created_at|date:"M d, Y • h:i A" }}</div>
+    </div>
+  {% empty %}
+    <div class="no-comments">No comments yet. Be the first to start the conversation!</div>
+  {% endfor %}
+</div>
+{% endblock %}

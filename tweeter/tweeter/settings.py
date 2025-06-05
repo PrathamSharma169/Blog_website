@@ -30,6 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = ['blog-website-duf9.onrender.com']
 
@@ -134,12 +135,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
 
+USE_TZ = True
+TIME_ZONE = 'Asia/Kolkata'  # or your actual local time zone
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -160,3 +162,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL='/accounts/login'
 LOGIN_REDIRECT_URL='/tweet/'
 # LOGOUT_REDIRECT_URL='/tweet/'
+
+# DEBUG=True
