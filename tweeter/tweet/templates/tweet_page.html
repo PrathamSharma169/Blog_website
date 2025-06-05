@@ -1,4 +1,6 @@
-{% extends "layout.html" %} {% block head %}
+{% extends "layout.html" %} 
+{% load filters %}
+{% block head %}
 <style>
   .tweet-container {
     max-width: 900px;
@@ -190,11 +192,11 @@
     {% if user.is_authenticated %}
     <button class="btn btn-outline-custom btn-sm" id="like-btn" type='submit' data-id="{{ tweet.id }}">
     <span id="like-icon">
-      {% if user.is_authenticated and tweet.likes.filter(id=user.id).exists %}
-    ❤️
-{% else %}
-    🤍
-{% endif %}
+    {% if user.is_authenticated and tweet.likes.all|user_liked:user %}
+        ❤️
+    {% else %}
+        🤍
+    {% endif %}
 
     </span>
     <span id="like-count">{{ tweet.like_count }}</span>
@@ -261,24 +263,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const tweetId = this.getAttribute("data-id");
 
         fetch(`/tweet/${tweetId}/like/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Not authorized");
-                return res.json();
-            })
-        .catch(err => alert(err));
-        .then(response => response.json())
-        .then(data => {
-            if (!data.error) {
-                likeIcon.innerText = data.liked ? "❤️" : "🤍";
-                likeCount.innerText = data.like_count;
-            }
-        });
+    method: "POST",
+    headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "X-Requested-With": "XMLHttpRequest"
+    }
+})
+.then(res => {
+    if (!res.ok) throw new Error("Not authorized");
+    return res.json();
+})
+.then(data => {
+    if (!data.error) {
+        likeIcon.innerText = data.liked ? "❤️" : "🤍";
+        likeCount.innerText = data.like_count;
+    }
+})
+.catch(err => alert(err.message));
+
     });
 });
 </script>
