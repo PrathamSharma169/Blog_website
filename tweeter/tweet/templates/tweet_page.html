@@ -190,7 +190,12 @@
     {% if user.is_authenticated %}
     <button class="btn btn-outline-custom btn-sm" id="like-btn" type='submit' data-id="{{ tweet.id }}">
     <span id="like-icon">
-      {% if user in tweet.likes.all %}❤️{% else %}🤍{% endif %}
+      {% if user.is_authenticated and tweet.likes.filter(id=user.id).exists %}
+    ❤️
+{% else %}
+    🤍
+{% endif %}
+
     </span>
     <span id="like-count">{{ tweet.like_count }}</span>
     
