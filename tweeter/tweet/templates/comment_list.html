@@ -66,6 +66,12 @@
       <div class="comment-user">@{{ c.user.username }}</div>
       <div class="comment-text">{{ c.text }}</div>
       <div class="comment-date">{{ c.created_at|date:"M d, Y • h:i A" }}</div>
+      {% if user == c.user or user == tweet.user %}
+      <form method="post" action="{% url 'comment_delete' c.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+      </form>
+    {% endif %}
     </div>
   {% empty %}
     <div class="no-comments">No comments yet. Be the first to start the conversation!</div>

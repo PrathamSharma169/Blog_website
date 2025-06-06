@@ -7,23 +7,13 @@ from django.contrib.auth import login
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
 
 
 # Create your views here.
 def nav(request):
     return render(request,"index.html")
-
-def tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, pk=tweet_id)
-
-    liked = False
-    if request.user.is_authenticated:
-        liked = tweet.likes.filter(id=request.user.id).exists()
-
-    return render(request, 'tweet_page.html', {
-        'tweet': tweet,
-        'liked': liked,
-    })
 
 def tweet_list(request):
     tweets=Tweet.objects.all().order_by('created_at')
@@ -110,22 +100,97 @@ def toggle_like(request, tweet_id):
         })
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-def comment(request, tweet_id):
-    tweet = Tweet.objects.get(id=tweet_id)
-
+@login_required
+# In your views.py, modify your comment view to handle AJAX
+def comment_get(request, tweet_id):
     if request.method == 'POST':
+        # Your existing comment creation logic
         comment_text = request.POST.get('comment')
-        if comment_text:
-            Comment.objects.create(tweet=tweet, user=request.user, text=comment_text)
-        return redirect('comment_list', tweet_id=tweet.id)  
-
-    return render(request, 'tweet_page.html', {'tweet': tweet})
+        tweet = get_object_or_404(Tweet, id=tweet_id)
+        comment = Comment.objects.create(
+            user=request.user,
+            tweet=tweet,
+            text=comment_text
+        )
+        
+        # If it's an AJAX request, return JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'comment': {
+                    'id': comment.id,
+                    'username': comment.user.username,
+                    'text': comment.text,
+                    'created_at': comment.created_at.strftime("%b %d, %Y • %I:%M %p")
+                }
+            })
+        
+        # For non-AJAX requests, redirect as before
+        return redirect('tweet_detail', tweet_id=tweet_id)
 
 def comment_list(request, tweet_id):
+    """
+    Optional: Separate comments page (probably not needed anymore)
+    """
     tweet = get_object_or_404(Tweet, id=tweet_id)
-    comments = tweet.comments.all().order_by('-created_at')  # thanks to related_name='comments'
+    comments = tweet.comments.all().order_by('-created_at')
 
     return render(request, 'comment_list.html', {
         'tweet': tweet,
         'comments': comments
     })
+
+@login_required
+def comment_delete(request, comment_id):
+    """
+    Delete a comment and return to the tweet page
+    """
+    comment = get_object_or_404(Comment, id=comment_id)
+    tweet_id = comment.tweet.id
+    
+    # Check if user is authorized to delete the comment
+    if request.user == comment.user or request.user == comment.tweet.user:
+        if request.method == 'POST':
+            comment.delete()
+    
+    return redirect('tweet_detail', tweet_id=tweet_id)
+
+def tweet_page(request, tweet_id):
+    """
+    Alternative view name - calls the same function
+    """
+    return tweet_detail(request, tweet_id)
+
+
+def tweet_detail(request, tweet_id):
+    """
+    Display tweet details with comments always loaded on the same page
+    This should be your main tweet page view
+    """
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    # Always load comments when displaying the tweet
+    comments = tweet.comments.all().order_by('-created_at')
+    
+    return render(request, 'tweet_page.html', {
+        'tweet': tweet,
+        'comments': comments
+    })
+
+@login_required
+def comment_create(request, tweet_id):
+    """
+    Handle comment creation and stay on the same page
+    """
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+
+    if request.method == 'POST':
+        comment_text = request.POST.get('comment')
+        if comment_text and comment_text.strip():
+            Comment.objects.create(
+                tweet=tweet, 
+                user=request.user, 
+                text=comment_text.strip()
+            )
+    
+    # Always redirect back to the tweet detail page
+    return redirect('tweet_detail', tweet_id=tweet.id)
