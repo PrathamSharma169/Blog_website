@@ -16,8 +16,8 @@ urlpatterns = [
     path('mytweet/',views.my_tweets,name='my_tweets'),
     path('search/', views.search_tweets, name='tweet_search'),
     path('<int:tweet_id>/like/', views.toggle_like, name='toggle_like'),
+    path('<int:tweet_id>/<int:comment_id>/delete_comment/', views.comment_delete, name='comment_delete'),
     path('<int:tweet_id>/comment/', views.comment_create, name='comment_get'),
-    path('comment/<int:comment_id>/delete/', views.comment_delete, name='comment_delete'),
     path('<int:tweet_id>/', views.tweet_detail, name='tweet_detail'),
     path('tweet/<int:tweet_id>/', views.tweet_detail, name='tweet_page'),
     # path("__reload__/", include("django_browser_reload.urls"))
