@@ -10,7 +10,7 @@ urlpatterns = [
     path('create/',views.create_tweet,name='tweet_create'),
     path('<int:tweet_id>/edit/',views.edit_tweet,name='tweet_edit'),
     path('<int:tweet_id>/delete/',views.delete_tweet,name='tweet_delete'),
-    # path('<int:tweet_id>/user_tweet/',views.tweet,name='tweet'),
+    path('<int:tweet_id>/user_tweet/',views.tweet,name='tweet'),
     path('register/',views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('mytweet/',views.my_tweets,name='my_tweets'),

@@ -13,6 +13,10 @@ from django.views.decorators.csrf import csrf_protect
 import logging
 from django.utils.timezone import localtime
 
+@login_required
+def tweet(request,tweet_id):
+    tweet= get_object_or_404(Tweet,id=tweet_id)
+    return render(request,'mytweet.html',{'tweets':tweet})
 
 # Create your views here.
 def nav(request):
