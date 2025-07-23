@@ -1,0 +1,475 @@
+{% extends "layout.html" %}
+{% block title %}Comment Analysis{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-3 mb-3 gradient-text">
+            <i class="fas fa-chart-bar me-3"></i>Comment Analysis Dashboard
+        </h1>
+        <p class="lead text-secondary fs-4">Deep insights into community sentiment and engagement</p>
+    </div>
+
+    <!-- Main Analytics Cards -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="row g-4">
+                <!-- Positive Comments Card -->
+                <div class="col-md-4">
+                    <div class="glass-card sentiment-card positive-card h-100 p-4 text-center position-relative overflow-hidden">
+                        <div class="sentiment-bg-icon">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div class="sentiment-content">
+                            <div class="sentiment-icon mb-3">
+                                <i class="fas fa-smile text-success" style="font-size: 3.5rem;"></i>
+                            </div>
+                            <h2 class="sentiment-count mb-2 text-success fw-bold display-4">
+                                {{ comment_positive }}
+                            </h2>
+                            <h4 class="sentiment-label mb-3 text-success">Positive Comments</h4>
+                            <div class="sentiment-percentage mb-4">
+                                {% if comment_positive or comment_negative or comment_neutral %}
+                                    {% with total=comment_positive|add:comment_negative|add:comment_neutral %}
+                                        {% widthratio comment_positive total 100 as percentage %}
+                                        <div class="progress-ring">
+                                            <svg class="progress-ring-svg" width="80" height="80">
+                                                <circle class="progress-ring-circle-bg" stroke="rgba(34, 197, 94, 0.2)" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                                <circle class="progress-ring-circle" stroke="#22c55e" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"
+                                                        style="--percentage: {{ percentage }}"/>
+                                            </svg>
+                                            <div class="progress-text">{{ percentage }}%</div>
+                                        </div>
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="progress-ring">
+                                        <svg class="progress-ring-svg" width="80" height="80">
+                                            <circle class="progress-ring-circle-bg" stroke="rgba(34, 197, 94, 0.2)" 
+                                                    stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                        </svg>
+                                        <div class="progress-text">0%</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <form method="post" action="{% url 'sentiment_list' tweet.id 'positive' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success-custom btn-lg sentiment-btn">
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                    <div class="btn-glow"></div>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Negative Comments Card -->
+                <div class="col-md-4">
+                    <div class="glass-card sentiment-card negative-card h-100 p-4 text-center position-relative overflow-hidden">
+                        <div class="sentiment-bg-icon">
+                            <i class="fas fa-frown"></i>
+                        </div>
+                        <div class="sentiment-content">
+                            <div class="sentiment-icon mb-3">
+                                <i class="fas fa-frown text-danger" style="font-size: 3.5rem;"></i>
+                            </div>
+                            <h2 class="sentiment-count mb-2 text-danger fw-bold display-4">
+                                {{ comment_negative }}
+                            </h2>
+                            <h4 class="sentiment-label mb-3 text-danger">Negative Comments</h4>
+                            <div class="sentiment-percentage mb-4">
+                                {% if comment_positive or comment_negative or comment_neutral %}
+                                    {% with total=comment_positive|add:comment_negative|add:comment_neutral %}
+                                        {% widthratio comment_negative total 100 as percentage %}
+                                        <div class="progress-ring">
+                                            <svg class="progress-ring-svg" width="80" height="80">
+                                                <circle class="progress-ring-circle-bg" stroke="rgba(239, 68, 68, 0.2)" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                                <circle class="progress-ring-circle" stroke="#ef4444" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"
+                                                        style="--percentage: {{ percentage }}"/>
+                                            </svg>
+                                            <div class="progress-text">{{ percentage }}%</div>
+                                        </div>
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="progress-ring">
+                                        <svg class="progress-ring-svg" width="80" height="80">
+                                            <circle class="progress-ring-circle-bg" stroke="rgba(239, 68, 68, 0.2)" 
+                                                    stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                        </svg>
+                                        <div class="progress-text">0%</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <form method="post" action="{% url 'sentiment_list' tweet.id 'negative' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger-custom btn-lg sentiment-btn">
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                    <div class="btn-glow"></div>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neutral Comments Card -->
+                <div class="col-md-4">
+                    <div class="glass-card sentiment-card neutral-card h-100 p-4 text-center position-relative overflow-hidden">
+                        <div class="sentiment-bg-icon">
+                            <i class="fas fa-meh"></i>
+                        </div>
+                        <div class="sentiment-content">
+                            <div class="sentiment-icon mb-3">
+                                <i class="fas fa-meh text-secondary" style="font-size: 3.5rem;"></i>
+                            </div>
+                            <h2 class="sentiment-count mb-2 text-secondary fw-bold display-4">
+                                {{ comment_neutral }}
+                            </h2>
+                            <h4 class="sentiment-label mb-3 text-secondary">Neutral Comments</h4>
+                            <div class="sentiment-percentage mb-4">
+                                {% if comment_positive or comment_negative or comment_neutral %}
+                                    {% with total=comment_positive|add:comment_negative|add:comment_neutral %}
+                                        {% widthratio comment_neutral total 100 as percentage %}
+                                        <div class="progress-ring">
+                                            <svg class="progress-ring-svg" width="80" height="80">
+                                                <circle class="progress-ring-circle-bg" stroke="rgba(156, 163, 175, 0.2)" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                                <circle class="progress-ring-circle" stroke="#9ca3af" 
+                                                        stroke-width="4" fill="transparent" r="36" cx="40" cy="40"
+                                                        style="--percentage: {{ percentage }}"/>
+                                            </svg>
+                                            <div class="progress-text">{{ percentage }}%</div>
+                                        </div>
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="progress-ring">
+                                        <svg class="progress-ring-svg" width="80" height="80">
+                                            <circle class="progress-ring-circle-bg" stroke="rgba(156, 163, 175, 0.2)" 
+                                                    stroke-width="4" fill="transparent" r="36" cx="40" cy="40"/>
+                                        </svg>
+                                        <div class="progress-text">0%</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <form method="post" action="{% url 'sentiment_list' tweet.id 'neutral' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-secondary-custom btn-lg sentiment-btn">
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                    <div class="btn-glow"></div>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <h3 class="accent-gradient-text mb-3">
+                        <i class="fas fa-chart-pie me-2"></i>Sentiment Overview
+                    </h3>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon mb-2">
+                                <i class="fas fa-comments" style="font-size: 2.5rem; color: var(--primary-gradient);"></i>
+                            </div>
+                            <h4 class="stat-number gradient-text">
+                                {{ comment_positive|add:comment_negative|add:comment_neutral }}
+                            </h4>
+                            <p class="stat-label text-secondary">Total Comments</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon mb-2">
+                                <i class="fas fa-thumbs-up text-success" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4 class="stat-number text-success">{{ comment_positive }}</h4>
+                            <p class="stat-label text-secondary">Happy Reactions</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon mb-2">
+                                <i class="fas fa-thumbs-down text-danger" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4 class="stat-number text-danger">{{ comment_negative }}</h4>
+                            <p class="stat-label text-secondary">Critical Feedback</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-icon mb-2">
+                                <i class="fas fa-equals text-secondary" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4 class="stat-number text-secondary">{{ comment_neutral }}</h4>
+                            <p class="stat-label text-secondary">Balanced Views</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="action-buttons">
+                <a href="{% url 'tweet_detail' tweet.id %}" class="btn btn-outline-custom btn-lg me-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Tweet
+                </a>
+                <a href="{% url 'tweet_list' %}" class="btn btn-primary-custom btn-lg">
+                    <i class="fas fa-home me-2"></i>Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .sentiment-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+        min-height: 450px;
+    }
+
+    .sentiment-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .positive-card:hover {
+        border-color: rgba(34, 197, 94, 0.3);
+        box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+    }
+
+    .negative-card:hover {
+        border-color: rgba(239, 68, 68, 0.3);
+        box-shadow: 0 20px 40px rgba(239, 68, 68, 0.2);
+    }
+
+    .neutral-card:hover {
+        border-color: rgba(156, 163, 175, 0.3);
+        box-shadow: 0 20px 40px rgba(156, 163, 175, 0.2);
+    }
+
+    .sentiment-bg-icon {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 8rem;
+        color: rgba(255,255,255,0.03);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .sentiment-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .sentiment-count {
+        font-family: 'Poppins', sans-serif;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .sentiment-btn {
+        position: relative;
+        overflow: hidden;
+        border-radius: 25px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .sentiment-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn-glow {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .sentiment-btn:hover .btn-glow {
+        left: 100%;
+    }
+
+    .btn-success-custom {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        border: none;
+        color: white;
+    }
+
+    .progress-ring {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .progress-ring-svg {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring-circle {
+        stroke-dasharray: 226;
+        stroke-dashoffset: calc(226 - (226 * var(--percentage)) / 100);
+        transition: stroke-dashoffset 2s ease-in-out;
+        stroke-linecap: round;
+    }
+
+    .progress-text {
+        position: absolute;
+        font-size: 1rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .stat-item {
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.02);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat-item:hover {
+        background: rgba(255,255,255,0.05);
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        font-family: 'Poppins', sans-serif;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .action-buttons .btn {
+        min-width: 160px;
+        border-radius: 25px;
+    }
+
+    /* Animation delays for staggered effect */
+    .sentiment-card:nth-child(1) { animation-delay: 0.1s; }
+    .sentiment-card:nth-child(2) { animation-delay: 0.2s; }
+    .sentiment-card:nth-child(3) { animation-delay: 0.3s; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .sentiment-card {
+            min-height: 380px;
+            margin-bottom: 2rem;
+        }
+        
+        .sentiment-count {
+            font-size: 2.5rem;
+        }
+        
+        .sentiment-bg-icon {
+            font-size: 5rem;
+            top: -10px;
+            right: -10px;
+        }
+        
+        .progress-ring-svg {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .progress-ring-circle,
+        .progress-ring-circle-bg {
+            r: 26;
+            cx: 30;
+            cy: 30;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<script>
+    // Animate progress rings on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressRings = document.querySelectorAll('.progress-ring-circle');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const circle = entry.target;
+                    const percentage = getComputedStyle(circle).getPropertyValue('--percentage');
+                    
+                    // Reset animation
+                    circle.style.strokeDashoffset = '226';
+                    
+                    // Trigger animation after a small delay
+                    setTimeout(() => {
+                        circle.style.strokeDashoffset = `calc(226 - (226 * ${percentage}) / 100)`;
+                    }, 200);
+                    
+                    observer.unobserve(circle);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        progressRings.forEach(ring => observer.observe(ring));
+        
+        // Add entrance animation to cards
+        const cards = document.querySelectorAll('.sentiment-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
+</script>
+{% endblock %}

@@ -20,5 +20,7 @@ urlpatterns = [
     path('<int:tweet_id>/comment/', views.comment_create, name='comment_get'),
     path('<int:tweet_id>/', views.tweet_detail, name='tweet_detail'),
     path('tweet/<int:tweet_id>/', views.tweet_detail, name='tweet_page'),
+    path('<int:tweet_id>/analysis',views.comment_sentiment_list, name='comment_sentiment_list'),
+    path('<int:tweet_id>/<str:sentiment>/count_analysis',views.sentiment_list, name='sentiment_list'),
     # path("__reload__/", include("django_browser_reload.urls"))
 ]

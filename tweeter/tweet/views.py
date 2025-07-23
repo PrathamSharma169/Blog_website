@@ -12,6 +12,7 @@ import json
 from django.views.decorators.csrf import csrf_protect
 import logging
 from django.utils.timezone import localtime
+import requests
 
 @login_required
 def tweet(request,tweet_id):
@@ -115,7 +116,16 @@ def comment_get(request, tweet_id):
     """
     tweet = get_object_or_404(Tweet, id=tweet_id)
     comment_text = request.POST.get('comment', '').strip()
-    
+    url = "https://twiter-sentiment-analysis.onrender.com/api/predict"
+
+    # The tweet to analyze
+    data = {
+        "tweet": comment_text
+    }
+
+    # Send POST request
+    response = requests.post(url, json=data)
+    result=response.json()
     if not comment_text:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': False, 'error': 'Comment cannot be empty'})
@@ -125,7 +135,8 @@ def comment_get(request, tweet_id):
     comment = Comment.objects.create(
         user=request.user,
         tweet=tweet,
-        text=comment_text
+        text=comment_text,
+        sentiment= result["sentiment"]
     )
     
     # If it's an AJAX request, return JSON
@@ -171,10 +182,10 @@ def comment_delete(request, comment_id,tweet_id):
         tweet = comment.tweet
         
         # Check if user is authorized to delete the comment
-        if request.user == comment.user or request.user == comment.tweet.user:
+        if request.user == comment.user or request.user == tweet.user:
             # Get comment count before deletion
             comment_count_before = tweet.comments.count()
-            
+            comment_id = comment.id
             # Delete the comment
             comment.delete()
             
@@ -256,3 +267,35 @@ def comment_create(request, tweet_id):
     Redirect to the main comment handler
     """
     return comment_get(request, tweet_id)
+
+@login_required
+def sentiment_list(request,tweet_id,sentiment):
+    """
+    List comments by sentiment
+    """
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    comments = tweet.comments.filter(sentiment=sentiment).order_by('-created_at')
+    positive_count = tweet.comments.filter(sentiment='positive').count()
+    negative_count = tweet.comments.filter(sentiment='negative').count()
+    neutral_count = tweet.comments.filter(sentiment='neutral').count()
+    return render(request, 'sentiment_list.html', {
+        'tweet': tweet,
+        'comments': comments,
+        'sentiment': sentiment,
+        'positive_count': positive_count,
+        'negative_count': negative_count,
+        'neutral_count': neutral_count
+    })
+
+@login_required
+def comment_sentiment_list(request, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    comment_negative = tweet.comments.filter(sentiment='negative').count()
+    comment_positive = tweet.comments.filter(sentiment='positive').count()
+    comment_neutral = tweet.comments.filter(sentiment='neutral').count()
+    return render(request, 'comment_analysis.html', {
+        'tweet': tweet,
+        'comment_negative': comment_negative,
+        'comment_positive': comment_positive, 
+        'comment_neutral': comment_neutral
+    })

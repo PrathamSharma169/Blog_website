@@ -1,0 +1,372 @@
+{% extends "layout.html" %}
+{% block title %}Sentiment Analysis Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3 gradient-text">
+            <i class="fas fa-chart-line me-3"></i>Sentiment Analysis Results
+        </h1>
+        <p class="lead text-secondary">Analyzing community sentiment and feedback</p>
+    </div>
+
+    <!-- Comments Container -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            {% if comments %}
+                <div class="glass-card p-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h3 class="secondary-gradient-text mb-0">
+                            <i class="fas fa-comments me-2"></i>Community Comments
+                        </h3>
+                        <div class="badge bg-primary-custom fs-6 px-3 py-2">
+                            {{ comments|length }} Comment{{ comments|length|pluralize }}
+                        </div>
+                    </div>
+
+                    <!-- Comments List -->
+                    <div class="comments-container">
+                        {% for comment in comments %}
+                        <div class="comment-card glass-card mb-3 p-4 position-relative animate-on-scroll">
+                            <!-- Comment Header -->
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <!-- User Avatar -->
+                                    <div class="user-avatar me-3">
+                                        <div style="
+                                            width: 45px;
+                                            height: 45px;
+                                            background: var(--primary-gradient);
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-weight: 600;
+                                            font-size: 1.1rem;
+                                            color: white;
+                                            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                                        ">
+                                            {{ comment.user.username|first|upper }}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- User Info -->
+                                    <div>
+                                        <h5 class="mb-1 text-white fw-semibold">
+                                            {{ comment.user.username }}
+                                        </h5>
+                                        <small class="text-secondary">
+                                            <i class="far fa-clock me-1"></i>
+                                            {% if comment.created_at %}
+                                                {{ comment.created_at|timesince }} ago
+                                            {% else %}
+                                                Just now
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Sentiment Badge -->
+                                {% if comment.sentiment %}
+                                    {% if comment.sentiment == 'positive' or comment.sentiment == 'POSITIVE' %}
+                                        <span class="badge bg-success-custom sentiment-badge">
+                                            <i class="fas fa-smile me-1"></i>Positive
+                                        </span>
+                                    {% elif comment.sentiment == 'negative' or comment.sentiment == 'NEGATIVE' %}
+                                        <span class="badge bg-danger sentiment-badge">
+                                            <i class="fas fa-frown me-1"></i>Negative
+                                        </span>
+                                    {% elif comment.sentiment == 'neutral' or comment.sentiment == 'NEUTRAL' %}
+                                        <span class="badge bg-secondary sentiment-badge">
+                                            <i class="fas fa-meh me-1"></i>Neutral
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info sentiment-badge">
+                                            <i class="fas fa-brain me-1"></i>{{ comment.sentiment|title }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <!-- Comment Content -->
+                            <div class="comment-content mb-3">
+                                <p class="mb-0 text-white-50 lh-relaxed" style="font-size: 1.05rem; line-height: 1.6;">
+                                    {{ comment.text }}
+                                </p>
+                            </div>
+
+                            <!-- Comment Actions -->
+                            <div class="comment-actions d-flex justify-content-between align-items-center">
+                                <div class="comment-stats">
+                                    {% if comment.likes_count %}
+                                        <span class="text-secondary me-3">
+                                            <i class="far fa-heart me-1"></i>{{ comment.likes_count }}
+                                        </span>
+                                    {% endif %}
+                                    {% if comment.replies_count %}
+                                        <span class="text-secondary">
+                                            <i class="far fa-comment me-1"></i>{{ comment.replies_count }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Delete Button -->
+                                {% if user.is_authenticated and comment.user == user or user.is_staff %}
+                                <form method="post" action="{% url 'comment_delete' tweet.id comment.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger btn-sm delete-btn"
+                                            onclick="return confirm('Are you sure you want to delete this comment?')"
+                                            title="Delete Comment">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+
+                            <!-- Sentiment Indicator Line -->
+                            {% if comment.sentiment %}
+                            <div class="sentiment-indicator">
+                                {% if comment.sentiment == 'positive' or comment.sentiment == 'POSITIVE' %}
+                                    <div class="sentiment-line bg-success"></div>
+                                {% elif comment.sentiment == 'negative' or comment.sentiment == 'NEGATIVE' %}
+                                    <div class="sentiment-line bg-danger"></div>
+                                {% else %}
+                                    <div class="sentiment-line bg-secondary"></div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Sentiment Summary -->
+                <div class="glass-card p-4">
+                    <h4 class="accent-gradient-text mb-4">
+                        <i class="fas fa-chart-pie me-2"></i>Sentiment Overview
+                    </h4>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="sentiment-stat">
+                                <div class="sentiment-icon text-success mb-2">
+                                    <i class="fas fa-smile" style="font-size: 2rem;"></i>
+                                </div>
+                                <h5 class="text-success mb-1">Positive</h5>
+                                <p class="text-secondary mb-0">
+                                    {{ positive_count }} comment{{ positive_count|pluralize }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="sentiment-stat">
+                                <div class="sentiment-icon text-secondary mb-2">
+                                    <i class="fas fa-meh" style="font-size: 2rem;"></i>
+                                </div>
+                                <h5 class="text-secondary mb-1">Neutral</h5>
+                                <p class="text-secondary mb-0">
+                                    {{ neutral_count }} comment{{ neutral_count|pluralize }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="sentiment-stat">
+                                <div class="sentiment-icon text-danger mb-2">
+                                    <i class="fas fa-frown" style="font-size: 2rem;"></i>
+                                </div>
+                                <h5 class="text-danger mb-1">Negative</h5>
+                                <p class="text-secondary mb-0">
+                                    {{ negative_count }} comment{{ negative_count|pluralize }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="glass-card p-5 text-center">
+                    <div class="empty-state">
+                        <i class="fas fa-comment-slash" style="font-size: 4rem; color: var(--text-secondary); opacity: 0.5;"></i>
+                        <h3 class="mt-4 mb-3 text-secondary">No Comments Yet</h3>
+                        <p class="text-secondary mb-4">
+                            Be the first to share your thoughts and start the conversation!
+                        </p>
+                        <a href="{% if tweet %}{% url 'tweet_detail' tweet.id %}{% else %}{% url 'tweet_list' %}{% endif %}" 
+                           class="btn btn-primary-custom">
+                            <i class="fas fa-plus me-2"></i>Add Comment
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Back Navigation -->
+            <div class="text-center mt-4">
+                <a href="{% if tweet %}{% url 'tweet_detail' tweet.id %}{% else %}{% url 'tweet_list' %}{% endif %}" 
+                   class="btn btn-outline-custom">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Tweet
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Styles -->
+<style>
+    .comment-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 3px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .comment-card:hover {
+        transform: translateX(5px);
+        border-left-color: var(--primary-gradient);
+    }
+
+    .comment-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    }
+
+    .user-avatar {
+        position: relative;
+    }
+
+    .user-avatar::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        background: #10b981;
+        border: 2px solid rgba(0,0,0,0.8);
+        border-radius: 50%;
+    }
+
+    .sentiment-badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .comment-content {
+        padding-left: 0.5rem;
+        border-left: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .comment-actions {
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .delete-btn {
+        border: 1.5px solid #dc3545;
+        border-radius: 20px;
+        padding: 0.4rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+
+    .delete-btn:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220,53,69,0.4);
+    }
+
+    .sentiment-indicator {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255,255,255,0.1);
+    }
+
+    .sentiment-line {
+        height: 100%;
+        width: 100%;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .sentiment-stat {
+        padding: 1rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        transition: all 0.3s ease;
+    }
+
+    .sentiment-stat:hover {
+        background: rgba(255,255,255,0.08);
+        transform: translateY(-3px);
+    }
+
+    .empty-state {
+        padding: 2rem 0;
+    }
+
+    .lh-relaxed {
+        line-height: 1.7 !important;
+    }
+
+    /* Animation for comment cards */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger animation for multiple comments */
+    .comment-card:nth-child(1) { animation-delay: 0.1s; }
+    .comment-card:nth-child(2) { animation-delay: 0.2s; }
+    .comment-card:nth-child(3) { animation-delay: 0.3s; }
+    .comment-card:nth-child(4) { animation-delay: 0.4s; }
+    .comment-card:nth-child(n+5) { animation-delay: 0.5s; }
+</style>
+
+<script>
+    // Add animation trigger for comments
+    document.addEventListener('DOMContentLoaded', function() {
+        const commentCards = document.querySelectorAll('.comment-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        commentCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

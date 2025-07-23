@@ -994,6 +994,10 @@ function closeShareModal() {
 {% block title %}{{ tweet.title }}{% endblock %}
 
 {% block content%}
+<form method="post" action="{% url 'comment_sentiment_list' tweet.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Analysis</button>
+  </form>
 <div class="container py-5">
   <div class="tweet-container">
     <div class="tweet-header">
