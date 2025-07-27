@@ -994,10 +994,12 @@ function closeShareModal() {
 {% block title %}{{ tweet.title }}{% endblock %}
 
 {% block content%}
+{% if  user == tweet.user %}
 <form method="post" action="{% url 'comment_sentiment_list' tweet.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-danger">Analysis</button>
   </form>
+{% endif %}
 <div class="container py-5">
   <div class="tweet-container">
     <div class="tweet-header">
@@ -1131,11 +1133,11 @@ function closeShareModal() {
     </div>
 
     <div class="glass-card p-4 p-md-5 mt-4">
-      <h3 class="fw-bold mb-4">Related Tweets</h3>
+      <h3 class="fw-bold mb-4">Related Blogs</h3>
       <div class="text-center py-4">
         <p class="text-secondary mb-4">Feature coming soon!</p>
         <a href="{% url 'tweet_list' %}" class="btn btn-primary-custom">
-          <i class="fas fa-th-large me-2"></i>Browse All Tweets
+          <i class="fas fa-th-large me-2"></i>Browse All Blogs
         </a>
       </div>
     </div>

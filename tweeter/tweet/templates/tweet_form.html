@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}{% if form.instance.pk %}Edit Tweet{% else %}Create Tweet{% endif %}{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Blog{% else %}Create Blog{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -10,9 +10,9 @@
         <div class="text-center mb-5">
           <h2 class="fw-bold">
             {% if form.instance.pk %}
-            <i class="fas fa-edit me-2"></i>Edit Your Tweet
+            <i class="fas fa-edit me-2"></i>Edit Your Blog
             {% else %}
-            <i class="fas fa-plus-circle me-2"></i>Create New Tweet
+            <i class="fas fa-plus-circle me-2"></i>Create New Blog
             {% endif %}
           </h2>
           <p class="text-secondary">Share your thoughts with the world</p>
@@ -29,9 +29,14 @@
             {% endif %}
           </div>
           
-          <div class="mb-4">
+          <div class="mb-4 position-relative">
             <label for="{{ form.text.id_for_label }}" class="form-label text-light">Content</label>
-            {{ form.text }}
+            <div class="position-relative">
+              {{ form.text }}
+              <button type="button" id="ai-helper-btn" class="ai-helper-button" title="AI Assistant">
+                <i class="fas fa-magic"></i>
+              </button>
+            </div>
             {% if form.text.errors %}
             <div class="text-danger mt-2">{{ form.text.errors }}</div>
             {% endif %}
@@ -48,18 +53,163 @@
           <div class="d-grid">
             <button type="submit" class="btn btn-primary-custom py-3">
               <i class="fas fa-paper-plane me-2"></i>
-              {% if form.instance.pk %}Update Tweet{% else %}Post Tweet{% endif %}
+              {% if form.instance.pk %}Update Blog{% else %}Post Blog{% endif %}
             </button>
           </div>
         </form>
         
         <div class="text-center mt-4">
           <a href="{% if form.instance.pk %}{% url 'tweet' form.instance.id %}{% else %}{% url 'tweet_list' %}{% endif %}" class="text-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to {% if form.instance.pk %}Tweet{% else %}Home{% endif %}
+            <i class="fas fa-arrow-left me-1"></i>Back to {% if form.instance.pk %}Blogs{% else %}Home{% endif %}
           </a>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-body text-center py-4">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5>AI is working its magic...</h5>
+        <p class="text-secondary mb-0">Please wait while we process your request</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+          Attention Required
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="error-message"></p>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Got it</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.ai-helper-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  z-index: 10;
+}
+
+.ai-helper-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.ai-helper-button:active {
+  transform: translateY(0);
+}
+
+.ai-helper-button i {
+  font-size: 16px;
+}
+
+/* Ensure the textarea container has proper positioning */
+.position-relative {
+  position: relative;
+}
+
+/* Add some padding to textarea to avoid text going under button */
+textarea {
+  padding-right: 60px !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const aiButton = document.getElementById('ai-helper-btn');
+    const titleField = document.getElementById('{{ form.title.id_for_label }}');
+    const textField = document.getElementById('{{ form.text.id_for_label }}');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const errorMessage = document.getElementById('error-message');
+
+    aiButton.addEventListener('click', function() {
+        const title = titleField.value.trim();
+        const text = textField.value.trim();
+
+        // Show loading modal
+        loadingModal.show();
+
+        // Make API request
+        fetch('{% url "ai_tweet_helper" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                title: title,
+                text: text
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingModal.hide();
+            
+            if (data.success) {
+                // Update the text field with generated/improved content
+                textField.value = data.generated_text;
+                
+                // Show success indication (optional)
+                aiButton.style.backgroundColor = '#28a745';
+                setTimeout(() => {
+                    aiButton.style.backgroundColor = '';
+                }, 2000);
+            } else {
+                // Show error modal
+                errorMessage.textContent = data.error || 'Something went wrong. Please try again.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            loadingModal.hide();
+            console.error('Error:', error);
+            errorMessage.textContent = 'Network error. Please check your connection and try again.';
+            errorModal.show();
+        });
+    });
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            bootstrap.Modal.getInstance(event.target)?.hide();
+        }
+    });
+});
+</script>
 {% endblock %}

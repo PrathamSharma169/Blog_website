@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Tweetster{% endblock %}</title>
+    <title>{% block title %}Blogster{% endblock %}</title>
 
     <!-- Bootstrap -->
     <link
@@ -30,6 +30,7 @@
         --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         --success-gradient: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --dark-gradient: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
         --glass-bg: rgba(255, 255, 255, 0.08);
         --glass-border: rgba(255, 255, 255, 0.18);
@@ -472,6 +473,13 @@
         background-clip: text;
       }
 
+      .success-gradient-text {
+        background: var(--success-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
       /* Badge enhancements */
       .badge {
         padding: 0.4em 0.8em;
@@ -487,13 +495,128 @@
         background: var(--secondary-gradient);
       }
 
+      /* Feature Card Styling */
+      .feature-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-primary);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        position: relative;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-gradient);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .feature-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .welcome-section {
+        text-align: center;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+      }
+
+      .instructions-section {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .instruction-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: var(--border-radius-sm);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+      }
+
+      .instruction-item:nth-child(odd) {
+        border-left-color: #667eea;
+      }
+
+      .instruction-item:nth-child(even) {
+        border-left-color: #f093fb;
+      }
+
+      .instruction-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(5px);
+      }
+
+      .instruction-number {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .cta-section {
+        text-align: center;
+        padding: 3rem 0;
+        margin-top: 3rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
       /* Responsive Enhancements */
       @media (max-width: 768px) {
         .navbar-brand {
           font-size: 1.5rem;
         }
 
-        .glass-card:hover {
+        .glass-card:hover,
+        .feature-card:hover {
           transform: translateY(-4px) scale(1.01);
         }
 
@@ -504,6 +627,19 @@
 
         body::before {
           background-size: 200% 200%;
+        }
+
+        .welcome-section {
+          padding: 2rem 0;
+        }
+
+        .instruction-item {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .instruction-number {
+          margin: 0 auto 1rem auto;
         }
       }
 
@@ -621,7 +757,7 @@
           class="navbar-brand d-flex align-items-center"
           href="{% url 'tweet_list' %}"
         >
-          <i class="fab fa-twitter me-2"></i>Tweetster
+          <i class="fas fa-blog me-2"></i>Blogster
         </a>
 
         <button
@@ -642,7 +778,7 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'my_tweets' %}">
-                <i class="fas fa-user me-1"></i>My Tweets
+                <i class="fas fa-user me-1"></i>My Blogs
               </a>
             </li>
           </ul>
@@ -659,7 +795,7 @@
                 class="search-input border-0"
                 type="search"
                 name="q"
-                placeholder="Search tweets..."
+                placeholder="Search blogs..."
               />
             </div>
             <button class="btn btn-outline-custom btn-sm ms-2" type="submit">
@@ -698,12 +834,12 @@
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a class="dropdown-item" href="{% url 'my_tweets' %}">
-                    <i class="fas fa-feather-alt me-2"></i>My Tweets
+                    <i class="fas fa-blog me-2"></i>My Blogs
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="{% url 'tweet_create' %}">
-                    <i class="fas fa-plus me-2"></i>New Tweet
+                    <i class="fas fa-plus me-2"></i>Create Blog
                   </a>
                 </li>
                 <li>
@@ -743,23 +879,248 @@
     </nav>
 
     <main class="flex-grow-1">
-    <!-- MAIN CONTENT -->
-    <main class="container-fluid px-4 py-5 page-transition">
-      {% block content %}
-      <div class="text-center">
-        <h1 class="display-4 mb-4 gradient-text">Welcome to Tweetster</h1>
-        <p class="lead text-secondary">Share your thoughts with the world</p>
-      </div>
-      {% endblock %}
+      <!-- MAIN CONTENT -->
+      <main class="container-fluid px-4 py-5 page-transition">
+        {% block content %}
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+          <h1 class="display-3 mb-4 gradient-text">Welcome to Blogster</h1>
+          <p class="lead text-secondary mb-4">Your AI-Powered Blogging Platform with Smart Analytics</p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if not user.is_authenticated %}
+              <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg">
+                <i class="fas fa-rocket me-2"></i>Get Started
+              </a>
+              <a href="{% url 'login' %}" class="btn btn-outline-custom btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+              </a>
+            {% else %}
+              <a href="{% url 'tweet_create' %}" class="btn btn-primary-custom btn-lg">
+                <i class="fas fa-plus me-2"></i>Create Your First Blog
+              </a>
+              <a href="{% url 'tweet_list' %}" class="btn btn-outline-custom btn-lg">
+                <i class="fas fa-eye me-2"></i>Explore Blogs
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="instructions-section">
+          <div class="text-center mb-5">
+            <h2 class="h1 mb-3 secondary-gradient-text">How Blogster Works</h2>
+            <p class="lead text-secondary">Discover the powerful features that make blogging effortless and engaging</p>
+          </div>
+
+          <div class="row">
+            <!-- Feature 1: Authentication -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-user-shield"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">1. Register & Login</h4>
+                <p class="text-secondary mb-0">
+                  Create your account or login to access all features. Only registered users can create, like, and comment on blogs. Your secure account gives you full access to our platform.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 2: Create Blogs -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-pen-fancy"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">2. Create Amazing Blogs</h4>
+                <p class="text-secondary mb-0">
+                  Click on "Create Blog" to start writing. Our intuitive editor makes it easy to craft engaging content with rich formatting options.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 3: My Blogs -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-folder-open"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">3. Manage Your Content</h4>
+                <p class="text-secondary mb-0">
+                  Visit "My Blogs" section to see all your created content in one place. Easily track your writing journey and manage your publications.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 4: Edit & Delete -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-edit"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">4. Full Control</h4>
+                <p class="text-secondary mb-0">
+                  Edit, update, or delete your blogs anytime. You have complete control over your content with easy-to-use management tools.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 5: Engagement -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-heart"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">5. Like & Comment</h4>
+                <p class="text-secondary mb-0">
+                  Engage with the community by liking and commenting on blogs. Express your thoughts and connect with other writers and readers.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 6: Comment Management -->
+            <div class="col-lg-6 mb-4">
+              <div class="feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-comments"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">6. Smart Comment System</h4>
+                <p class="text-secondary mb-0">
+                  Comments can be deleted by either the comment owner or the blog owner. Maintain healthy discussions with flexible moderation.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Features Section -->
+          <div class="row mt-5">
+            <div class="col-12">
+              <div class="glass-card p-4">
+                <div class="text-center mb-4">
+                  <h3 class="h2 accent-gradient-text mb-3">
+                    <i class="fas fa-robot me-3"></i>AI-Powered Features
+                  </h3>
+                </div>
+                
+                <div class="row">
+                  <div class="col-lg-4 mb-4">
+                    <div class="text-center">
+                      <div class="feature-icon mb-3">
+                        <i class="fas fa-magic"></i>
+                      </div>
+                      <h5 class="gradient-text mb-3">AI Content Generation</h5>
+                      <p class="text-secondary">
+                        Enter just a title and click the pen icon - our AI will generate engaging 250-word content for you instantly.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-4 mb-4">
+                    <div class="text-center">
+                      <div class="feature-icon mb-3">
+                        <i class="fas fa-sparkles"></i>
+                      </div>
+                      <h5 class="gradient-text mb-3">Content Enhancement</h5>
+                      <p class="text-secondary">
+                        Already have content? Click the pen icon to rephrase and make it more professional and polished.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-4 mb-4">
+                    <div class="text-center">
+                      <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line"></i>
+                      </div>
+                      <h5 class="gradient-text mb-3">Smart Analytics</h5>
+                      <p class="text-secondary">
+                        ML-powered comment analysis shows positive, negative, and neutral feedback on your blogs.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Important Notes Section -->
+          <div class="row mt-5">
+            <div class="col-12">
+              <div class="glass-card p-4" style="border-left: 4px solid #f093fb;">
+                <h4 class="h5 mb-4 secondary-gradient-text">
+                  <i class="fas fa-info-circle me-2"></i>Important Notes
+                </h4>
+                
+                <div class="row">
+                  <div class="col-lg-6 mb-3">
+                    <div class="instruction-item">
+                      <div class="instruction-number">!</div>
+                      <div>
+                        <strong class="text-warning">Comment Processing Time</strong><br>
+                        <span class="text-secondary">Comments may take a moment to appear as our ML model analyzes them in the background. Please wait and don't reload the page during processing.</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-6 mb-3">
+                    <div class="instruction-item">
+                      <div class="instruction-number">📊</div>
+                      <div>
+                        <strong class="success-gradient-text">Analytics Access</strong><br>
+                        <span class="text-secondary">Only blog owners can access the "Analysis" tab to view detailed comment sentiment analysis and statistics.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Call to Action Section -->
+          <div class="cta-section mt-5">
+            <h3 class="h2 mb-4 gradient-text">Ready to Start Blogging?</h3>
+            <p class="lead text-secondary mb-4">
+              Join our community of writers and share your stories with the world
+            </p>
+            {% if not user.is_authenticated %}
+              <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg">
+                  <i class="fas fa-user-plus me-2"></i>Create Account
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-secondary-custom btn-lg">
+                  <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+              </div>
+            {% else %}
+              <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'tweet_create' %}" class="btn btn-primary-custom btn-lg">
+                  <i class="fas fa-plus me-2"></i>Write Your First Blog
+                </a>
+                <a href="{% url 'tweet_list' %}" class="btn btn-success-custom btn-lg">
+                  <i class="fas fa-eye me-2"></i>Explore Community
+                </a>
+              </div>
+            {% endif %}
+            
+            <div class="mt-4">
+              <p class="text-secondary mb-0">
+                <i class="fas fa-heart text-danger me-1"></i>
+                Thank you for your support and happy blogging!
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endblock %}
+      </main>
     </main>
-</main>
+
     <!-- ENHANCED FOOTER -->
     <footer class="footer text-center py-4">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6 text-md-start">
             <p class="mb-0 text-secondary">
-              &copy; 2025 Tweetster | Built by
+              &copy; 2025 Blogster | Built by
               <span class="secondary-gradient-text fw-semibold"
                 >Pratham Sharma</span
               >
@@ -852,10 +1213,27 @@
         );
 
         document
-          .querySelectorAll(".glass-card, .animate-on-scroll")
+          .querySelectorAll(".glass-card, .feature-card, .animate-on-scroll")
           .forEach((el) => {
             observer.observe(el);
           });
+
+        // Add staggered animation to feature cards
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+          card.style.animationDelay = (index * 0.1) + 's';
+          card.classList.add('page-transition');
+        });
+      });
+
+      // Add hover effects to instruction items
+      document.querySelectorAll('.instruction-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateX(10px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateX(0)';
+        });
       });
     </script>
   </body>
