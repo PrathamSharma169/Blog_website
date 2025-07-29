@@ -188,6 +188,7 @@
   <div class="tweet-grid">
     {% for tweet in tweets %}
     <div class="glass-card tweet-card animate-on-scroll">
+      <a href="{% url 'tweet_detail' tweet.id %}" style="text-decoration: none; color: inherit;"> 
       <div class="tweet-image-wrapper">
         <img
           src="{{ tweet.photo.url }}"
@@ -202,7 +203,7 @@
       <div class="tweet-content">
         <h3 class="tweet-title">{{ tweet.title }}</h3>
         <p class="tweet-text">{{ tweet.text }}</p>
-
+</a>
         <div class="tweet-actions">
           <a
             href="{% url 'tweet_detail' tweet.id %}"
@@ -223,8 +224,8 @@
               href="{% url 'tweet_delete' tweet.id %}"
               class="btn btn-outline-danger btn-sm"
             >
-              <i class="fas fa-trash me-1"></i>
-            </a>
+              <i class="fas fa-trash me-1"></i> 
+              </a>
           </div>
           {% endif %}
         </div>

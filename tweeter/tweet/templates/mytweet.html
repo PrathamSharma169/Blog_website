@@ -188,9 +188,9 @@
     </div>
   </div>
 
-  {% if tweets %}
+  {% if mytweets %}
   <div class="tweet-grid">
-    {% for tweet in tweets %}
+    {% for tweet in mytweets %}
     <div class="glass-card tweet-card animate-on-scroll">
       <a href="{% url 'tweet' tweet.id %}" class="text-decoration-none">
         <div class="tweet-image-container">
@@ -212,7 +212,7 @@
 
         <div class="tweet-actions">
           <a
-            href="{% url 'tweet' tweet.id %}"
+            href="{% url 'tweet_detail' tweet.id %}"
             class="btn btn-outline-custom btn-sm"
           >
             <i class="fas fa-eye me-1"></i>View

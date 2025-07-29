@@ -83,7 +83,7 @@ def register(request):
 @login_required
 def my_tweets(request):
     tweets = Tweet.objects.filter(user=request.user).order_by('-created_at')  # optional sorting
-    return render(request, 'mytweet.html', {'tweets': tweets})
+    return render(request, 'mytweet.html', {'mytweets': tweets})
 
 
 def search_tweets(request):

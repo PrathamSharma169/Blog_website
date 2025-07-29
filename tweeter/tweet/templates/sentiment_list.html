@@ -112,7 +112,7 @@
                                 </div>
 
                                 <!-- Delete Button -->
-                                {% if user.is_authenticated and comment.user == user or user.is_staff %}
+                                {% if user.is_authenticated and comment.user == user or tweet.user == user or user.is_staff %}
                                 <form method="post" action="{% url 'comment_delete' tweet.id comment.id %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" 
