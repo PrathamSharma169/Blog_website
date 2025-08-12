@@ -196,7 +196,9 @@
           alt="{{ tweet.title }}"
         />
         <div class="user-badge">
+        <a href="{% url 'user_profile' tweet.user.id %}" style="color: inherit; text-decoration: none;">
           <i class="fas fa-user-circle me-1"></i>@{{ tweet.user.username }}
+        </a>
         </div>
       </div>
 

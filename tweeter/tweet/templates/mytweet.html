@@ -204,9 +204,11 @@
       <div class="tweet-content">
         <div class="d-flex justify-content-between align-items-start mb-3">
           <h3 class="tweet-title text-white mb-0">{{ tweet.title }}</h3>
+          <a href="{%url 'user_profile' tweet.user.id%}">
           <span class="badge bg-primary-custom rounded-pill"
             >@{{ tweet.user.username }}</span
           >
+          </a>
         </div>
         <p class="tweet-text">{{ tweet.text|truncatechars:100 }}</p>
 

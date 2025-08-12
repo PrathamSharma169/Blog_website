@@ -33,6 +33,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="d-flex align-items-center">
                                     <!-- User Avatar -->
+                                    <a href="{% url 'user_profile' comment.user.id %}" style="color: inherit; text-decoration: none;">
                                     <div class="user-avatar me-3">
                                         <div style="
                                             width: 45px;
@@ -47,14 +48,19 @@
                                             color: white;
                                             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
                                         ">
+                                            <a href="{% url 'user_profile' comment.user.id %}" style="color: inherit; text-decoration: none;">
                                             {{ comment.user.username|first|upper }}
+                                            </a>
                                         </div>
                                     </div>
+                                    </a>
                                     
                                     <!-- User Info -->
                                     <div>
                                         <h5 class="mb-1 text-white fw-semibold">
+                                            <a href="{% url 'user_profile' comment.user.id %}" style="color: inherit; text-decoration: none;">
                                             {{ comment.user.username }}
+                                            </a>
                                         </h5>
                                         <small class="text-secondary">
                                             <i class="far fa-clock me-1"></i>

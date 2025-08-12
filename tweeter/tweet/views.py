@@ -15,6 +15,7 @@ from django.utils.timezone import localtime
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
+from django.contrib.auth.models import User
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -404,3 +405,16 @@ def ai_tweet_helper(request):
         return JsonResponse({'error': f'Network error: {str(e)}'}, status=500)
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
+    
+
+def user_profile(request, user_id):
+    """
+    Display user profile with their tweets
+    """
+    user = get_object_or_404(User, id=user_id)
+    tweets = Tweet.objects.filter(user=user).order_by('-created_at')
+    
+    return render(request, 'user_profile.html', {
+        'profile_user': user,
+        'mytweets': tweets
+    })

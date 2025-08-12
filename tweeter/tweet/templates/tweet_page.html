@@ -385,7 +385,9 @@
             <i class="fas fa-user"></i>
           </div>
           <div class="author-info">
+            <a href="{%url 'user_profile' tweet.user.id%}" style="color: inherit; text-decoration: none;">
             <div class="author-username">@{{ tweet.user.username }}</div>
+            </a>
             <div class="tweet-date">
               {{ tweet.created_at|date:"F j, Y • g:i A" }}
             </div>
@@ -492,7 +494,9 @@
           {% for c in comments %}
             <div class="comment-card" data-comment-id="{{ c.id }}">
               <div class="comment-header">
+                <a href="{% url 'user_profile' c.user.id %}" style="color: inherit; text-decoration: none;">
                 <div class="comment-user">@{{ c.user.username }}</div>
+                </a>
                 <div class="comment-date">{{ c.created_at|date:"M d, Y • h:i A" }}</div>
               </div>
               <div class="comment-text">{{ c.text|linebreaksbr }}</div>
