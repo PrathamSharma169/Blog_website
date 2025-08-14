@@ -14,8 +14,9 @@ from django.core.management import call_command
 
 def run_migrations(request):
     try:
-        call_command('makemigrations')  # Create migration files
-        call_command('migrate', 'tweet', fake=True) # Apply them to the DB
+        # call_command('makemigrations')  # Create migration files
+        # call_command('migrate', 'tweet', fake=True) # Apply them to the DB
+        call_command('migrate')
         return HttpResponse("✅ Makemigrations and Migrate applied successfully.")
     except Exception as e:
         return HttpResponse(f"❌ Error: {e}")
