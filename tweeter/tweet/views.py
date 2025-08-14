@@ -16,6 +16,7 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
 from django.contrib.auth.models import User
+from django.views.decorators.cache import never_cache
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -307,6 +308,7 @@ def comment_sentiment_list(request, tweet_id):
 
 @login_required
 @csrf_exempt
+@never_cache
 def ai_tweet_helper(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)

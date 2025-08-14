@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet/',include('tweet.urls')),
     path('accounts/',include('django.contrib.auth.urls')),
+    path('auth/', include('social_django.urls', namespace='social')),  # Social Auth URLs
     path('',views.home, name='home'),
     path("run-collectstatic/", views.run_collectstatic),
     path("make_migration/", views.run_migrations),  # 🔐 REMOVE this after first deploy

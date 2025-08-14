@@ -152,21 +152,23 @@ textarea {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const aiButton = document.getElementById('ai-helper-btn');
-    const titleField = document.getElementById('{{ form.title.id_for_label }}');
-    const textField = document.getElementById('{{ form.text.id_for_label }}');
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
     const errorMessage = document.getElementById('error-message');
 
     aiButton.addEventListener('click', function() {
+        const titleField = document.getElementById('{{ form.title.id_for_label }}');
+        const textField = document.getElementById('{{ form.text.id_for_label }}');
+
         const title = titleField.value.trim();
         const text = textField.value.trim();
+        console.log('AI Button Clicked:', { title});
 
         // Show loading modal
         loadingModal.show();
 
         // Make API request
-        fetch('{% url "ai_tweet_helper" %}', {
+        fetch('{% url "ai_tweet_helper" %}?_=' + new Date().getTime(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

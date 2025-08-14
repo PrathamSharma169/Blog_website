@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'tweet',
     'cloudinary',
     'cloudinary_storage',
+    'social_django',
     # 'tailwind',
     # 'theme',  
     # 'django_browser_reload',
@@ -72,11 +73,32 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 
     # 'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',       # get profile info from provider
+    'social_core.pipeline.social_auth.social_uid',           # get UID from provider
+    'social_core.pipeline.social_auth.auth_allowed',         # check if login is allowed
+    'social_core.pipeline.social_auth.social_user',          # check if user already exists
+    'social_core.pipeline.user.get_username',                # generate username
+    'social_core.pipeline.user.create_user',                 # create new user if needed
+    'tweet.pipeline.save_username_email',                    # your custom step
+    'social_core.pipeline.social_auth.associate_user',       # link social account
+    'social_core.pipeline.social_auth.load_extra_data',      # load extra data from provider
+)
+
+
+
 ROOT_URLCONF = 'tweeter.urls'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TEMPLATES = [
     {
@@ -165,3 +187,6 @@ LOGIN_REDIRECT_URL='/tweet/'
 # LOGOUT_REDIRECT_URL='/tweet/'
 
 # DEBUG=True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
