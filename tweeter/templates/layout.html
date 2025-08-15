@@ -885,7 +885,7 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
           <h1 class="display-3 mb-4 gradient-text">Welcome to Blogster</h1>
-          <p class="lead text-secondary mb-4">Your AI-Powered Blogging Platform with Smart Analytics</p>
+          <p class="lead text-secondary mb-4">Your AI-Powered Blogging Platform with Smart Analytics & Collaboration</p>
           <div class="d-flex justify-content-center gap-3 flex-wrap">
             {% if not user.is_authenticated %}
               <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg">
@@ -921,7 +921,7 @@
                 </div>
                 <h4 class="h5 mb-3 gradient-text">1. Register & Login</h4>
                 <p class="text-secondary mb-0">
-                  Create your account or login to access all features. Only registered users can create, like, and comment on blogs. Your secure account gives you full access to our platform.
+                  Create your account with email or <strong class="accent-gradient-text">sign up with Google OAuth</strong> for quick access. Only registered users can create, like, and comment on blogs. Your secure account gives you full access to our platform.
                 </p>
               </div>
             </div>
@@ -939,52 +939,78 @@
               </div>
             </div>
 
-            <!-- Feature 3: My Blogs -->
+            <!-- Feature 3: Collaboration -->
+            <div class="col-lg-6 mb-4">
+              <div class="h-100 feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">3. Collaborative Writing</h4>
+                <p class="text-secondary mb-0">
+                  <strong class="success-gradient-text">Add contributors to your blogs!</strong> Invite other users to collaborate on your posts and work together to create amazing content.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 4: My Blogs -->
             <div class="col-lg-6 mb-4">
               <div class="h-100 feature-card">
                 <div class="feature-icon">
                   <i class="fas fa-folder-open"></i>
                 </div>
-                <h4 class="h5 mb-3 gradient-text">3. Manage Your Content</h4>
+                <h4 class="h5 mb-3 gradient-text">4. Manage Your Content</h4>
                 <p class="text-secondary mb-0">
-                  Visit "My Blogs" section to see all your created content in one place. Easily track your writing journey and manage your publications.
+                  Visit "My Blogs" section to see all your created content and <strong class="accent-gradient-text">blogs you've contributed to</strong> in one organized place. Easily track your writing journey and collaborations.
                 </p>
               </div>
             </div>
 
-            <!-- Feature 4: Edit & Delete -->
+            <!-- Feature 5: User Profiles -->
+            <div class="col-lg-6 mb-4">
+              <div class="h-100 feature-card">
+                <div class="feature-icon">
+                  <i class="fas fa-id-card"></i>
+                </div>
+                <h4 class="h5 mb-3 gradient-text">5. Explore User Profiles</h4>
+                <p class="text-secondary mb-0">
+                  <strong class="secondary-gradient-text">Click on any username</strong> to visit their profile and discover all their blogs and contributions. Connect with writers and explore their content journey.
+                </p>
+              </div>
+            </div>
+
+            <!-- Feature 6: Edit & Delete -->
             <div class="col-lg-6 mb-4">
               <div class="h-100 feature-card">
                 <div class="feature-icon">
                   <i class="fas fa-edit"></i>
                 </div>
-                <h4 class="h5 mb-3 gradient-text">4. Full Control</h4>
+                <h4 class="h5 mb-3 gradient-text">6. Full Control</h4>
                 <p class="text-secondary mb-0">
                   Edit, update, or delete your blogs anytime. You have complete control over your content with easy-to-use management tools.
                 </p>
               </div>
             </div>
 
-            <!-- Feature 5: Engagement -->
+            <!-- Feature 7: Engagement -->
             <div class="col-lg-6 mb-4">
               <div class="h-100 feature-card">
                 <div class="feature-icon">
                   <i class="fas fa-heart"></i>
                 </div>
-                <h4 class="h5 mb-3 gradient-text">5. Like & Comment</h4>
+                <h4 class="h5 mb-3 gradient-text">7. Like & Comment</h4>
                 <p class="text-secondary mb-0">
                   Engage with the community by liking and commenting on blogs. Express your thoughts and connect with other writers and readers.
                 </p>
               </div>
             </div>
 
-            <!-- Feature 6: Comment Management -->
+            <!-- Feature 8: Comment Management -->
             <div class="col-lg-6 mb-4">
               <div class="h-100 feature-card">
                 <div class="feature-icon">
                   <i class="fas fa-comments"></i>
                 </div>
-                <h4 class="h5 mb-3 gradient-text">6. Smart Comment System</h4>
+                <h4 class="h5 mb-3 gradient-text">8. Smart Comment System</h4>
                 <p class="text-secondary mb-0">
                   Comments can be deleted by either the comment owner or the blog owner. Maintain healthy discussions with flexible moderation.
                 </p>
@@ -1043,6 +1069,55 @@
             </div>
           </div>
 
+          <!-- New Features Highlight -->
+          <div class="row mt-5">
+            <div class="col-12">
+              <div class="glass-card p-4" style="border-left: 4px solid #0ba360;">
+                <h4 class="h5 mb-4 success-gradient-text">
+                  <i class="fas fa-star me-2"></i>New Features Added
+                </h4>
+                
+                <div class="row">
+                  <div class="col-lg-4 mb-3">
+                    <div class="h-100 instruction-item">
+                      <div class="instruction-number" style="background: var(--success-gradient);">
+                        <i class="fas fa-users" style="font-size: 0.7rem;"></i>
+                      </div>
+                      <div>
+                        <strong class="success-gradient-text">Collaboration System</strong><br>
+                        <span class="text-secondary">Add other users as contributors to your blogs and work together on creating amazing content.</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-4 mb-3">
+                    <div class="h-100 instruction-item">
+                      <div class="instruction-number" style="background: var(--accent-gradient);">
+                        <i class="fas fa-user-circle" style="font-size: 0.7rem;"></i>
+                      </div>
+                      <div>
+                        <strong class="accent-gradient-text">User Profiles</strong><br>
+                        <span class="text-secondary">Visit any user's profile by clicking their username to see all their blogs and contributions.</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-lg-4 mb-3">
+                    <div class="h-100 instruction-item">
+                      <div class="instruction-number" style="background: var(--secondary-gradient);">
+                        <i class="fab fa-google" style="font-size: 0.7rem;"></i>
+                      </div>
+                      <div>
+                        <strong class="secondary-gradient-text">Google OAuth</strong><br>
+                        <span class="text-secondary">Quick sign up and login with your Google account for seamless access to the platform.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Important Notes Section -->
           <div class="row mt-5">
             <div class="col-12">
@@ -1090,6 +1165,12 @@
                 <a href="{% url 'login' %}" class="btn btn-secondary-custom btn-lg">
                   <i class="fas fa-sign-in-alt me-2"></i>Sign In
                 </a>
+              </div>
+              <div class="mt-3">
+                <p class="text-secondary mb-0">
+                  <i class="fab fa-google text-info me-1"></i>
+                  Or sign up quickly with Google OAuth
+                </p>
               </div>
             {% else %}
               <div class="d-flex justify-content-center gap-3 flex-wrap">
