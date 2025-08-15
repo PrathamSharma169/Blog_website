@@ -2,6 +2,8 @@ from django import forms
 from .models import Tweet
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 class Tweetform(forms.ModelForm):
     text = forms.CharField(
@@ -22,9 +24,32 @@ class Tweetform(forms.ModelForm):
             'placeholder': 'Title'
         })
     )
+
+    collaborators = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter collaborator emails separated by commas'
+        })
+    )
     class Meta:
-        model=Tweet
-        fields=('text','photo','title')
+        model = Tweet
+        fields = ('text', 'photo', 'title', 'collaborators')
+
+    def clean_collaborators(self):
+        collaborators = self.cleaned_data.get('collaborators')
+        if collaborators:
+            data = self.cleaned_data['collaborators']
+        if not data:
+            return []
+
+        emails = [email.strip() for email in data.split(',') if email.strip()]
+        for email in emails:
+            try:
+                validate_email(email)
+            except ValidationError:
+                raise ValidationError(f"Invalid email: {email}")
+        return emails
 
 
 

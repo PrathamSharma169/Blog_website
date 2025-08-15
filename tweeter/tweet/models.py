@@ -26,3 +26,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.username}: {self.text[:30]}"
+    
+class Collaborations(models.Model):
+    collaborator = models.ForeignKey(User, on_delete=models.CASCADE)
+    tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='collaborators')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} collaborates on {self.tweet.title}"

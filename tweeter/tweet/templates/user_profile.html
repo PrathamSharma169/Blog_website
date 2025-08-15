@@ -214,6 +214,41 @@
     border-radius: 2px;
   }
 
+  /* Additional styling for collaboration badges */
+  .collaboration-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    text-align: center;
+    border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .collaboration-card {
+    position: relative;
+  }
+
+  .collaboration-card .tweet-image-container {
+    border-radius: 0;
+  }
+
+  .collaboration-card .glass-card {
+    padding-top: 0;
+    overflow: hidden;
+  }
+
+  /* Section spacing */
+  .section-container {
+    margin-bottom: 4rem;
+  }
+
   @media (max-width: 768px) {
     .profile-header {
       padding: 2rem 1rem;
@@ -271,6 +306,10 @@
                 <div class="stat-label">Blog{{ mytweets|length|pluralize }}</div>
               </div>
               <div class="stat-item">
+                <div class="stat-number">{{ collaborations|length|default:0 }}</div>
+                <div class="stat-label">Collaboration{{ collaborations|length|pluralize }}</div>
+              </div>
+              <div class="stat-item">
                 <div class="stat-number">
                   {% if mytweets and mytweets.0.user.date_joined %}
                     {{ mytweets.0.user.date_joined|date:"M Y" }}
@@ -297,58 +336,163 @@
     </div>
   </div>
 
-  <!-- Blogs Section -->
-  {% if mytweets %}
+  <!-- User's Blogs Section -->
+  <div class="section-container">
+    {% if mytweets %}
+      <h2 class="section-title">
+        {% if mytweets %}{{ mytweets.0.user.username }}'s Blogs{% else %}Blogs{% endif %}
+      </h2>
+      <div class="tweet-grid">
+        {% for tweet in mytweets %}
+        <div class="glass-card tweet-card animate-on-scroll">
+          <a href="{% url 'tweet' tweet.id %}" class="text-decoration-none">
+            <div class="tweet-image-container">
+              {% if tweet.photo %}
+                <img
+                  src="{{ tweet.photo.url }}"
+                  class="tweet-image"
+                  alt="{{ tweet.title }}"
+                />
+              {% else %}
+                <div class="tweet-image d-flex align-items-center justify-content-center" style="background: var(--primary-gradient);">
+                  <i class="fas fa-blog fa-3x text-white"></i>
+                </div>
+              {% endif %}
+            </div>
+          </a>
+          <div class="tweet-content">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h3 class="tweet-title text-white mb-0">{{ tweet.title }}</h3>
+              <span class="badge bg-primary-custom rounded-pill">
+                @{{ tweet.user.username }}
+              </span>
+            </div>
+            <p class="tweet-text">{{ tweet.text|truncatechars:120 }}</p>
+
+            {% if mytweets.0.user == request.user %}
+            <div class="tweet-actions">
+              <a
+                href="{% url 'tweet_detail' tweet.id %}"
+                class="btn btn-outline-custom btn-sm"
+              >
+                <i class="fas fa-eye me-1"></i>View
+              </a>
+              <div class="d-flex gap-2">
+                <a
+                  href="{% url 'tweet_edit' tweet.id %}"
+                  class="btn btn-outline-custom btn-sm"
+                >
+                  <i class="fas fa-edit me-1"></i>Edit
+                </a>
+                <a
+                  href="{% url 'tweet_delete' tweet.id %}"
+                  class="btn btn-outline-danger btn-sm"
+                >
+                  <i class="fas fa-trash me-1"></i>
+                </a>
+              </div>
+            </div>
+            {% else %}
+            <div class="tweet-meta">
+              <div>
+                <i class="fas fa-calendar-alt me-1"></i>
+                {{ tweet.created_at|date:"M d, Y" }}
+              </div>
+              <a
+                href="{% url 'tweet_detail' tweet.id %}"
+                class="btn btn-outline-custom btn-sm"
+              >
+                <i class="fas fa-eye me-1"></i>Read More
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="glass-card p-5">
+          <i class="fas fa-blog display-1 text-secondary mb-4 empty-icon"></i>
+          <h2 class="fw-bold mb-3">No Blogs Yet</h2>
+          <p class="text-secondary mb-4">
+            {% if mytweets %}
+              {{ mytweets.0.user.username }} hasn't shared any blogs yet. Check back later!
+            {% else %}
+              This user hasn't shared any blogs yet. Check back later!
+            {% endif %}
+          </p>
+          {% if mytweets and mytweets.0.user == request.user %}
+            <a
+              href="{% url 'tweet_create' %}"
+              class="btn btn-primary-custom btn-lg px-4 py-2"
+            >
+              <i class="fas fa-plus me-2"></i>Create Your First Blog
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Collaborations Section -->
+  {% if collaborations %}
+  <div class="section-container">
     <h2 class="section-title">
-      {% if mytweets %}{{ mytweets.0.user.username }}'s Blogs{% else %}Blogs{% endif %}
+      <i class="fas fa-users me-2"></i>Collaborations
     </h2>
     <div class="tweet-grid">
-      {% for tweet in mytweets %}
-      <div class="glass-card tweet-card animate-on-scroll">
-        <a href="{% url 'tweet' tweet.id %}" class="text-decoration-none">
+      {% for collab in collaborations %}
+      <div class="glass-card tweet-card animate-on-scroll collaboration-card">
+        <span class="collaboration-badge">
+          <i class="fas fa-users me-1"></i>Collaboration
+        </span>
+        <a href="{% url 'tweet_detail' collab.tweet.id %}" class="text-decoration-none">
           <div class="tweet-image-container">
-            {% if tweet.photo %}
+            {% if collab.tweet.photo %}
               <img
-                src="{{ tweet.photo.url }}"
+                src="{{ collab.tweet.photo.url }}"
                 class="tweet-image"
-                alt="{{ tweet.title }}"
+                alt="{{ collab.tweet.title }}"
               />
             {% else %}
-              <div class="tweet-image d-flex align-items-center justify-content-center" style="background: var(--primary-gradient);">
-                <i class="fas fa-blog fa-3x text-white"></i>
+              <div class="tweet-image d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <i class="fas fa-handshake fa-3x text-white"></i>
               </div>
             {% endif %}
           </div>
         </a>
         <div class="tweet-content">
           <div class="d-flex justify-content-between align-items-start mb-3">
-            <h3 class="tweet-title text-white mb-0">{{ tweet.title }}</h3>
+            <h3 class="tweet-title text-white mb-0">{{ collab.tweet.title }}</h3>
             <span class="badge bg-primary-custom rounded-pill">
-              @{{ tweet.user.username }}
+              <a href="{%url 'user_profile' collab.tweet.user.id%}" style="color: inherit; text-decoration: none;">
+              @{{ collab.tweet.user.username }}
+              </a>
             </span>
           </div>
-          <p class="tweet-text">{{ tweet.text|truncatechars:120 }}</p>
+          <p class="tweet-text">{{ collab.tweet.text|truncatechars:120 }}</p>
 
-          {% if mytweets.0.user == request.user %}
+          {% if collab.tweet.user == request.user %}
           <div class="tweet-actions">
             <a
-              href="{% url 'tweet_detail' tweet.id %}"
+              href="{% url 'tweet_detail' collab.tweet.id %}"
               class="btn btn-outline-custom btn-sm"
             >
               <i class="fas fa-eye me-1"></i>View
             </a>
             <div class="d-flex gap-2">
               <a
-                href="{% url 'tweet_edit' tweet.id %}"
+                href="{% url 'tweet_edit' collab.tweet.id %}"
                 class="btn btn-outline-custom btn-sm"
               >
                 <i class="fas fa-edit me-1"></i>Edit
               </a>
               <a
-                href="{% url 'tweet_delete' tweet.id %}"
+                href="{% url 'tweet_delete' collab.tweet.id %}"
                 class="btn btn-outline-danger btn-sm"
               >
-                <i class="fas fa-trash me-1"></i>
+                <i class="fas fa-trash me-1"></i>Delete
               </a>
             </div>
           </div>
@@ -356,10 +500,10 @@
           <div class="tweet-meta">
             <div>
               <i class="fas fa-calendar-alt me-1"></i>
-              {{ tweet.created_at|date:"M d, Y" }}
+              {{ collab.tweet.created_at|date:"M d, Y" }}
             </div>
             <a
-              href="{% url 'tweet_detail' tweet.id %}"
+              href="{% url 'tweet_detail' collab.tweet.id %}"
               class="btn btn-outline-custom btn-sm"
             >
               <i class="fas fa-eye me-1"></i>Read More
@@ -370,28 +514,27 @@
       </div>
       {% endfor %}
     </div>
+  </div>
   {% else %}
+  <!-- Empty state for collaborations -->
+  <div class="section-container">
+    <h2 class="section-title">
+      <i class="fas fa-users me-2"></i>Collaborations
+    </h2>
     <div class="empty-state">
       <div class="glass-card p-5">
-        <i class="fas fa-blog display-1 text-secondary mb-4 empty-icon"></i>
-        <h2 class="fw-bold mb-3">No Blogs Yet</h2>
+        <i class="fas fa-handshake display-1 text-secondary mb-4 empty-icon"></i>
+        <h2 class="fw-bold mb-3">No Collaborations Yet</h2>
         <p class="text-secondary mb-4">
           {% if mytweets %}
-            {{ mytweets.0.user.username }} hasn't shared any blogs yet. Check back later!
+            {{ mytweets.0.user.username }} hasn't participated in any collaborations yet.
           {% else %}
-            This user hasn't shared any blogs yet. Check back later!
+            This user hasn't participated in any collaborations yet.
           {% endif %}
         </p>
-        {% if mytweets and mytweets.0.user == request.user %}
-          <a
-            href="{% url 'tweet_create' %}"
-            class="btn btn-primary-custom btn-lg px-4 py-2"
-          >
-            <i class="fas fa-plus me-2"></i>Create Your First Blog
-          </a>
-        {% endif %}
       </div>
     </div>
+  </div>
   {% endif %}
 </div>
 {% endblock %}

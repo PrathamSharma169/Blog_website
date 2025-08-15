@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404,redirect
-from .models import Tweet,Comment
+from .models import Tweet,Comment,Collaborations
 from .forms import Tweetform,UserRegistrationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
@@ -23,7 +23,8 @@ load_dotenv()
 @login_required
 def tweet(request,tweet_id):
     tweet= get_object_or_404(Tweet,id=tweet_id)
-    return render(request,'mytweet.html',{'tweets':tweet})
+    collabortion= Collaborations.objects.filter(tweet=tweet)
+    return render(request,'mytweet.html',{'tweets':tweet, 'collaborations':collabortion})
 
 # Create your views here.
 def nav(request):
@@ -41,7 +42,16 @@ def create_tweet(request):
             tweet=form.save(commit=False)
             tweet.user=request.user
             tweet.save()
-            return redirect(tweet_list)
+
+            collaborator_emails = form.cleaned_data['collaborators']
+            for email in collaborator_emails:
+                try:
+                    user = User.objects.get(email=email)
+                    Collaborations.objects.create(tweet=tweet, collaborator=user)
+                except User.DoesNotExist:
+                    pass  # Optionally handle users that don't exist
+
+            return redirect('tweet_list')
 
     else:
         form=Tweetform()
@@ -56,10 +66,27 @@ def edit_tweet(request,tweet_id):
             tweet=form.save(commit=False)
             tweet.user=request.user
             tweet.save()
+            # Process collaborators
+            collaborator_emails = form.cleaned_data.get('collaborators', [])
+            for email in collaborator_emails:
+                try:
+                    user = User.objects.get(email=email)
+                    # Skip if already a collaborator
+                    if not Collaborations.objects.filter(tweet=tweet, collaborator=user).exists():
+                        Collaborations.objects.create(tweet=tweet, collaborator=user)
+                except User.DoesNotExist:
+                    pass  # Ignore if user with that email doesn't exist
+
             return redirect('tweet_list')
     else:
-        form = Tweetform(instance=tweet)
-    return render(request,'tweet_form.html',{'form':form})
+        # Pre-fill collaborators in form for editing
+        existing_collaborators = tweet.collaborators.values_list('collaborator__email', flat=True)
+        form = Tweetform(
+            instance=tweet,
+            initial={'collaborators': ', '.join(existing_collaborators)}
+        )
+
+    return render(request, 'tweet_form.html', {'form': form})
 
 @login_required
 def delete_tweet(request,tweet_id):
@@ -261,10 +288,12 @@ def tweet_detail(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)
     # Always load comments when displaying the tweet
     comments = tweet.comments.all().order_by('-created_at')
+    collabortion= Collaborations.objects.filter(tweet=tweet)
     
     return render(request, 'tweet_page.html', {
         'tweet': tweet,
-        'comments': comments
+        'comments': comments,
+        'collaborations': collabortion,
     })
 
 @login_required
@@ -415,8 +444,11 @@ def user_profile(request, user_id):
     """
     user = get_object_or_404(User, id=user_id)
     tweets = Tweet.objects.filter(user=user).order_by('-created_at')
+    # Optionally, you can also show the user's collaborations
+    collaborations = Collaborations.objects.filter(collaborator=user).select_related('tweet')
     
     return render(request, 'user_profile.html', {
         'profile_user': user,
-        'mytweets': tweets
+        'mytweets': tweets,
+        'collaborations': collaborations
     })
