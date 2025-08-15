@@ -112,7 +112,8 @@ def register(request):
 @login_required
 def my_tweets(request):
     tweets = Tweet.objects.filter(user=request.user).order_by('-created_at')  # optional sorting
-    return render(request, 'mytweet.html', {'mytweets': tweets})
+    collaborations = Collaborations.objects.filter(collaborator=request.user).select_related('tweet')
+    return render(request, 'mytweet.html', {'mytweets': tweets, 'collaborations': collaborations})
 
 
 def search_tweets(request):
